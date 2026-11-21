@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prénom Nom — Intitulé du poste</title><meta name="description" content="Portfolio : présentation, projets, parcours et écrits."><meta name="theme-color" content="#0d1a33">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500&family=Noto+Serif+JP:wght@200;300;400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="base.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700&text=%E5%90%8D%E5%89%8D%E8%8B%97%E5%AD%97&display=swap"><link rel="stylesheet" href="logo-ai.css"><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="icon" href="favicon.ico" sizes="48x48"><link rel="apple-touch-icon" href="apple-touch-icon.png"><script>(function(){var d=document.documentElement,q=location.search;
+if(q.indexOf('still')<0&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&!sessionStorage.getItem('ai-intro')){d.classList.add('intro');try{sessionStorage.setItem('ai-intro','1')}catch(e){}}
+if(q.indexOf('still')>-1)d.classList.add('still');
+/* ouverture à chaque chargement : le logo d'abord, puis le reste */
+if(q.indexOf('still')<0&&!matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('ouv','boot');
+/* au rechargement, repartir du haut : sinon l'ouverture se joue hors écran */
+if('scrollRestoration' in history)history.scrollRestoration='manual';if(!location.hash)window.scrollTo(0,0);}})();</script><style>
+.diag{width:100%;height:auto;background:var(--card)}
+.diag .t-lbl{font:400 12px var(--mono);fill:var(--ink)}
+.diag .t-sub{font:400 11px var(--mono);fill:var(--muted)}
+.will-draw .trace{stroke-dasharray:1;stroke-dashoffset:1}
+.will-draw .box{opacity:0}
+.will-draw.drawn .trace{stroke-dashoffset:0;transition:stroke-dashoffset 1.1s var(--ease-in-out)}
+.will-draw.drawn .box{opacity:1;transition:opacity .45s ease .35s}
+.will-draw.drawn path[stroke-dasharray="4 3"],.will-draw.drawn path[stroke-dasharray="3 3"]{stroke-dasharray:none}
+
+/* ── HERO (photo + verre + cadre conservés) ── */
+.hero{position:relative;min-height:100svh;display:grid;place-items:center;overflow:hidden;color:var(--night-fg);background:var(--night);isolation:isolate}
+.hero__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(6px) saturate(.85) brightness(.6);transform:scale(1.03);z-index:-2}
+.hero__veil{position:absolute;inset:0;z-index:-1;background:linear-gradient(160deg,oklch(0.24 0.08 255/.58),oklch(0.14 0.06 255/.5))}
+.frame{position:absolute;inset:50px 72px 50px 55px;pointer-events:none}
+.frame i{position:absolute}
+.frame .l,.frame .r{top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,oklch(1 0 0/.2),transparent)}.frame .l{left:0}.frame .r{right:0}
+.frame .t,.frame .b{left:0;right:0;height:1px;background:linear-gradient(to right,transparent,oklch(1 0 0/.2),transparent)}.frame .t{top:0}.frame .b{bottom:0}
+.frame .dot{position:absolute;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--accent-lt)}
+.frame .dot.t{top:-3px}.frame .dot.b{bottom:-3px}
+.kanji{position:absolute;top:50%;font:200 12px/1 var(--serif);letter-spacing:.3em;color:var(--night-muted);writing-mode:vertical-rl;transform:translateY(-50%)}
+.kanji.l{left:22px}.kanji.r{right:86px;transform:translateY(-50%) rotate(180deg)}
+.hero__content{text-align:center;display:grid;justify-items:center;padding:120px var(--pad-x) 96px}
+/* Logo animé (logo-ai.css) : joué à chaque chargement (classe .ouv) ; figé avec ?still, en mouvement réduit et après un changement de langue */
+html:not(.ouv) .ai-logo,html:not(.ouv) .ai-logo *{animation-duration:1ms!important;animation-delay:0s!important}
+/* Tant que la langue enregistrée n'est pas en place (.boot), tout est en pause et le logo caché :
+   sinon l'entrée démarre en français puis repart de zéro au remplacement du contenu. */
+html.boot *,html.boot *::before,html.boot *::after{animation-play-state:paused!important}
+html.boot .ai-logo{visibility:hidden}
+/* Pendant l'entrée, le logo est centré dans l'écran (--ai-dy, mesuré au chargement), puis remonte
+   à sa place quand le titre, le texte et les boutons apparaissent. */
+@keyframes aiCenter{from{translate:var(--ai-fx,0px) calc(var(--ai-dy,0px) + var(--ai-fy,0px))}}
+/* Position finale calée sur le pixel entier (--ai-fx/--ai-fy, mesurés en JS) : sinon le A (SVG, arrondi au pixel)
+   et la bande inclinée (placée au sous-pixel) se décalent d'environ 1 px à leur jonction. */
+.hero .ai-logo{translate:var(--ai-fx,0px) var(--ai-fy,0px)}
+/* Le logo reste sur sa propre couche avant, pendant et après la remontée : sinon le navigateur
+   le redessine à la fin de l'animation et on voit une légère déformation (saut de rendu). */
+.ouv .hero .ai-logo--brand{will-change:translate;backface-visibility:hidden}
+.ouv .hero .ai-logo--brand{animation:aiFade .9s .6s ease both,aiCenter .7s var(--ease-in-out) calc(var(--intro-end) - .25s) both}
+/* Modèle : textes de substitution plus longs que les initiales d’origine → texte réduit et centré */
+.ai-logo--brand .ai-band>span{font-size:calc(84*var(--u));text-align:center}
+.ai-logo--brand .ai-band-1,.ai-logo--brand .ai-band-2{--tp:0}
+/* Japonais : textes des bandes, en Noto Sans JP grasse (Fredoka n'a pas de kana ni de kanji) */
+.lang-ja .ai-logo--brand .ai-band>span{font-family:'Noto Sans JP',system-ui,sans-serif;font-size:calc(76*var(--u));letter-spacing:.02em}
+/* Seconde bande : élargie (178 → 210 u) et texte centré, sinon le second kanji touche le bord */
+.lang-ja .ai-logo--brand{--b2:210;--ai-span:868}
+.lang-ja .ai-logo--brand .ai-band-2{--tp:0}
+.lang-ja .ai-logo--brand .ai-band-2>span{text-align:center}
+.wordmark{font-weight:200;font-size:var(--step-4);line-height:.95;letter-spacing:-0.03em;display:flex;align-items:baseline;white-space:nowrap}
+.wordmark .w{position:relative;display:inline-flex}
+.wordmark .x{display:inline-block}
+.wordmark .sep{color:var(--accent-lt);font-size:.36em;margin:0 .22em;align-self:center}
+.wordmark .bar{position:absolute;left:0;right:0;bottom:-.06em;height:2px;background:var(--accent-lt);opacity:.75;transform-origin:left}
+.hero__h1{margin-top:40px;font-weight:300;font-size:clamp(1.25rem,2vw,1.75rem);line-height:1.3;text-wrap:balance}
+.hero__lead{margin-top:14px;max-width:54ch;color:var(--night-muted);font-size:var(--step-0);line-height:1.6;text-wrap:pretty}
+.hero__actions{margin-top:32px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+/* entrée unique (~1,2 s), une fois par session ; jamais au scroll */
+@keyframes settle{from{transform:scale(1.09)}}
+@keyframes rise{from{opacity:0;transform:translateY(.25em)}}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes bar{from{transform:scaleX(0)}}
+@keyframes up{from{opacity:0;transform:translateY(12px)}}
+.intro .hero__bg{animation:settle 1.1s var(--ease-enter) both}
+.intro .wordmark .a{animation:rise .6s var(--ease-enter) both}
+.intro .wordmark .w+.sep+.w .a{animation-delay:.08s}
+.intro .wordmark .x{animation:wipe .75s var(--ease-out) .2s both}
+.intro .wordmark .sep{animation:up .4s var(--ease-enter) .3s both}
+.intro .wordmark .bar{animation:bar .7s var(--ease-out) .5s both}
+/* Ouverture (comme le portfolio d'origine) : le logo joue d'abord, puis le reste se découvre
+   à la fin de son entrée (--intro-end, logo-ai.css). */
+@keyframes ouvFade{from{opacity:0;visibility:hidden}}
+.ouv .hero__h1{animation:up .52s var(--ease-enter) var(--intro-end) both}
+.ouv .hero__lead{animation:up .52s var(--ease-enter) calc(var(--intro-end) + .06s) both}
+.ouv .hero__actions{animation:up .52s var(--ease-enter) calc(var(--intro-end) + .12s) both}
+.ouv .nav,.ouv .rk{animation:ouvFade .6s ease calc(var(--intro-end) + .2s) both}
+.ouv.relang .nav,.ouv.relang .rk{animation:none}
+
+/* ── PROFIL ── */
+.profil{display:grid;grid-template-columns:7fr 5fr;gap:clamp(40px,7vw,120px);align-items:start}
+.profil__body{margin-top:28px;display:grid;gap:16px;max-width:60ch;font-size:var(--step-1);color:var(--muted)}
+.profil .tags{margin-top:28px}
+.spec{border-top:1px solid var(--fg);margin-top:12px}
+.spec>div{display:grid;grid-template-columns:1fr auto 44px;align-items:baseline;gap:16px;padding:22px 0;border-bottom:1px solid var(--border)}
+.spec dt{font-size:15px;color:var(--muted)}
+.spec dd{font:400 clamp(24px,2.4vw,32px)/1 var(--mono);color:var(--accent)}
+.spec .k{font:200 26px/1 var(--serif);color:var(--border-strong);text-align:right}
+
+/* ── en-tête de section : titre + une ligne, sans eyebrow ── */
+.sec-head{display:grid;grid-template-columns:7fr 5fr;gap:clamp(40px,7vw,120px);align-items:end;margin-bottom:56px}
+.sec-head .lead{margin-top:0}
+
+/* ── PROJETS ── */
+.feats{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.card{display:block;text-decoration:none;background:var(--card);border:1px solid var(--border);
+  transition:transform 180ms var(--ease-out),border-color 180ms ease,box-shadow 180ms ease}
+.card:active{transform:scale(.99)}
+.card figure{border-bottom:1px solid var(--border);overflow:hidden}
+.card__body{padding:28px 28px 30px}
+.meta{display:flex;gap:14px;align-items:baseline;font-size:13px;color:var(--accent);font-weight:400}
+.meta .num{color:var(--muted);font-size:12px}
+.card h3{margin-top:10px;font-size:clamp(1.25rem,1.6vw,1.5rem);font-weight:300;line-height:1.25;letter-spacing:-.01em;display:flex;justify-content:space-between;gap:16px}
+.card h3 .arr{flex:none;margin-top:.4em;color:var(--accent);transition:transform var(--t-hover) var(--ease-out)}
+.card p{margin-top:10px;color:var(--muted);max-width:56ch}
+.card .tags{margin-top:20px}
+.index{list-style:none;margin-top:24px;border-top:1px solid var(--border-strong)}
+.index a{display:grid;grid-template-columns:72px minmax(0,1.6fr) minmax(0,.8fr) minmax(0,1.2fr) 20px;gap:24px;align-items:baseline;padding:22px 0;
+  text-decoration:none;border-bottom:1px solid var(--border)}
+.index h3{transition:color var(--t-hover) ease}
+.index .num{font-size:13px;color:var(--muted)}
+.index h3{font-size:var(--step-1);font-weight:400;line-height:1.3}
+.index h3 small{display:block;font-size:14px;font-weight:300;color:var(--muted);margin-top:4px}
+.index .cat{font-size:14px;color:var(--accent);font-weight:400}
+.index .arr{color:var(--accent);align-self:center;transition:transform var(--t-hover) var(--ease-out)}
+@media (hover:hover) and (pointer:fine){
+  .card:hover{transform:translateY(-2px);border-color:var(--border-strong);box-shadow:0 10px 24px oklch(0.12 0.04 255/.08)}
+  .card:hover h3 .arr,.index a:hover .arr,.post a:hover .arr{transform:translateX(3px)}
+  .index a:hover h3,.post a:hover h3{color:var(--accent)}
+}
+
+/* ── STACK ── */
+.stack{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--fg)}
+.dom{padding:32px 32px 8px 0}
+.dom+.dom{padding-left:32px;border-left:1px solid var(--border)}
+.dom header{display:flex;gap:12px;align-items:baseline;margin-bottom:18px}
+.dom .code{font:400 13px var(--mono);color:var(--accent)}
+.dom h3{font-size:var(--step-1);font-weight:400}
+.dom ul{list-style:none}
+.dom li{padding:14px 0;border-top:1px solid var(--border)}
+.dom li b{font-weight:400;display:block}
+.dom li span{display:block;font-size:14px;color:var(--muted);margin-top:2px}
+.dom li span.none{color:var(--muted)}
+
+/* ── PARCOURS ── */
+.tl{list-style:none;position:relative;--c:180px}
+.tl::before{content:"";position:absolute;left:calc(var(--c) + 23px);top:10px;bottom:0;width:1px;background:linear-gradient(var(--accent),transparent)}
+.tl li{display:grid;grid-template-columns:var(--c) 1fr;gap:0 48px;padding-bottom:52px;position:relative}
+.tl li::before{content:"";position:absolute;left:calc(var(--c) + 19px);top:7px;width:9px;height:9px;border-radius:50%;background:var(--bg2);border:2px solid var(--accent)}
+.tl .num{font-size:13px;color:var(--accent);padding-top:2px}
+.tl h3{font-size:clamp(1.125rem,1.5vw,1.375rem);font-weight:400;line-height:1.3}
+.tl .co{font-size:14px;color:var(--muted);margin-top:4px}
+.tl p.d{margin-top:12px;color:var(--muted);max-width:64ch}
+.tl .tags{margin-top:14px}
+
+/* ── ÉCRITS ── */
+.posts{list-style:none;border-top:1px solid var(--fg)}
+.post a{display:grid;grid-template-columns:110px 130px minmax(0,1fr) auto;gap:24px;align-items:baseline;padding:26px 0;border-bottom:1px solid var(--border);text-decoration:none}
+.post .num{font-size:13px;color:var(--muted)}
+.post .cat{font-size:14px;color:var(--accent);font-weight:400}
+.post h3{font-size:var(--step-1);font-weight:400;line-height:1.35;max-width:52ch;transition:color var(--t-hover) ease}
+.post p{font-size:15px;color:var(--muted);margin-top:6px;max-width:68ch}
+.post .read{font-size:14px;color:var(--accent);font-weight:400;display:inline-flex;gap:8px;align-items:center;white-space:nowrap}
+.post .arr{width:14px;height:14px;transition:transform var(--t-hover) var(--ease-out)}
+
+/* ── CONTACT (bandeau nuit : rappel du hero) ── */
+.contact{background:var(--night);color:var(--night-fg);overflow:hidden}
+.contact .h2 em{color:var(--accent-lt)}
+.contact .lead{color:var(--night-muted)}
+.contact__mail{display:inline-block;margin-top:44px;font-weight:200;font-size:clamp(1.75rem,4.4vw,3.75rem);letter-spacing:-.02em;line-height:1.1;text-decoration:none;
+  background:linear-gradient(var(--accent-lt),var(--accent-lt)) 0 100%/100% 1px no-repeat;padding-bottom:6px;transition:background-size 240ms var(--ease-out);overflow-wrap:anywhere}
+@media (hover:hover) and (pointer:fine){.contact__mail:hover{background-size:100% 2px}}
+.contact__links{margin-top:40px;display:flex;gap:28px;font-size:15px;font-weight:400}
+.contact__links a{display:inline-flex;gap:8px;align-items:center;text-decoration:none;min-height:44px}
+.contact__links .arr{width:12px;height:12px}
+.contact .kanji{color:oklch(0.7 0.05 255)}
+
+@media (max-width:900px){
+  .profil,.sec-head,.feats,.stack{grid-template-columns:1fr}
+  .sec-head{gap:16px;margin-bottom:40px}
+  .dom,.dom+.dom{padding:28px 0 8px;border-left:0}
+  .index a{grid-template-columns:56px 1fr 20px;gap:6px 16px}
+  .index .cat,.index .tags{grid-column:2}
+  .index .arr{grid-row:1;grid-column:3}
+  .post a{grid-template-columns:auto 1fr;gap:6px 16px}.post a>div,.post .read{grid-column:1/-1}
+  .tl{--c:0px}.tl::before{left:3px}.tl li{grid-template-columns:1fr;padding-left:32px;gap:6px}.tl li::before{left:-1px}
+  .rocket-progress{display:none}
+  .frame{inset:28px 18px}.kanji{display:none}
+}
+@media (max-width:600px){
+  .hero__actions{flex-direction:column;align-self:stretch;width:100%}.hero__actions .btn{justify-content:center}
+  .wordmark{font-size:clamp(2.75rem,14vw,4rem)}
+  .nav .btn{padding:0 12px;font-size:13px}
+  .card__body{padding:22px 20px 24px}
+}
+
+/* ══ FUSÉE LATÉRALE : navigation (01) · trajectoire (02) · largage + cyanotype (03) · piste mobile (04) ══ */
+.rk{--H:min(46vh,430px);--sw:22px;--sh:88px;position:fixed;right:22px;top:50%;width:var(--sw);height:var(--H);transform:translateY(-50%);z-index:90;
+  --ink:oklch(0.25 0.09 255);--fillc:oklch(0.90 0.02 255);--railc:var(--border-strong);transition:opacity .2s ease}
+.rk.is-docked{opacity:0;pointer-events:none}
+.rk__rail{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--railc);transition:background-color .3s ease}
+.rk__fill{position:absolute;left:0;bottom:0;width:1px;height:100%;background:var(--accent);transform-origin:bottom;transform:scaleY(var(--fill,0))}
+.rk__pad{position:absolute;left:-9px;bottom:0;width:19px;height:1px;background:var(--ink)}
+.rk__ticks{list-style:none;position:absolute;inset:0}
+.rk__ticks li{position:absolute;left:50%;bottom:var(--y,0px);width:0;height:0}
+.rk__ticks a{position:absolute;left:-22px;top:-22px;width:44px;height:44px;display:block;text-decoration:none;border-radius:2px}
+.rk__ticks a::before{content:"";position:absolute;left:17px;top:22px;width:10px;height:1px;background:var(--railc);transition:background-color .2s ease,transform .2s var(--ease-out)}
+.rk__ticks li.is-past a::before,.rk__ticks li.is-cur a::before{background:var(--accent)}
+.rk__ticks li.is-cur a::before{transform:scaleX(1.6)}
+.rk__lbl{position:absolute;right:46px;top:50%;transform:translate(4px,-50%);opacity:0;white-space:nowrap;pointer-events:none;
+  font:400 12px/1 var(--mono);color:var(--muted);background:var(--card);border:1px solid var(--border);padding:6px 9px;
+  transition:opacity 160ms var(--ease-out),transform 160ms var(--ease-out);transition-delay:calc(var(--i,0) * 30ms)}
+.rk__lbl b{font-weight:400;color:var(--accent)}
+.rk__ticks li.is-cur .rk__lbl{color:var(--fg);border-color:var(--accent)}
+.rk:focus-within .rk__lbl{opacity:1;transform:translate(0,-50%)}
+@media (hover:hover) and (pointer:fine){.rk:hover .rk__lbl{opacity:1;transform:translate(0,-50%)}}
+.rk__ticks a:focus-visible{outline:2px solid var(--accent);outline-offset:-6px}
+.rk__ship,.rk__ghost{position:absolute;left:0;top:0;width:var(--sw);height:var(--sh);will-change:transform}
+.rk__ghost{opacity:0;transition:opacity .4s ease .25s}
+.rk__ghost.is-on{opacity:.3}
+.rk__svg{width:var(--sw);height:auto;overflow:visible;display:block}
+.rk__svg [fill="oklch(0.90 0.02 255)"],.rk__svg [fill="oklch(0.86 0.025 255)"],.rk__svg [fill="oklch(0.84 0.02 255)"]{fill:var(--fillc)}
+.rk .rpart{transform-box:fill-box;transform-origin:50% 0}
+.rk .rpart.is-shed{opacity:0}
+.rk .rpart.is-active rect,.rk .rpart.is-active path:first-child{fill:color-mix(in oklch,var(--accent) 24%,var(--fillc))}
+.rk:not(.is-lit) .rpart-flame{opacity:0}
+.rk.is-lit .rpart-flame:not(.is-shed){animation:rFlicker 2s ease-in-out infinite}
+@keyframes rFlicker{0%,100%{filter:brightness(1)}40%{filter:brightness(.8)}70%{filter:brightness(1.12)}}
+.rk__count{position:absolute;left:50%;top:calc(100% + 14px);writing-mode:vertical-rl;transform:translateX(-50%);
+  font:400 12px/1 var(--mono);color:var(--muted);white-space:nowrap;letter-spacing:.04em}
+.rk__count b{font-weight:400;color:var(--accent)}
+.rk__count span{color:var(--fg)}
+/* cyanotype : sur fond nuit, traits clairs et remplissage marine */
+.rk.is-night{--ink:oklch(0.93 0.02 255);--fillc:oklch(0.28 0.07 255);--railc:oklch(1 0 0/.28)}
+.rk.is-night .rk__count{color:var(--night-muted)}.rk.is-night .rk__count span{color:var(--night-fg)}
+.rk.is-night .rk__count b{color:var(--accent-lt)}
+.rk.is-night .rk__fill{background:var(--accent-lt)}
+@media (prefers-reduced-motion:reduce){.rk .rpart-flame{animation:none!important}.rk__ghost{transition:none}}
+
+/* 04 · téléphone : piste horizontale sous la barre de navigation */
+@media (max-width:900px){
+  .rk{--sw:12px;--sh:48px;left:0;right:0;top:var(--nav-h);width:auto;height:20px;transform:none;background:oklch(0.99 0.005 255/.92);
+     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 0 var(--border)}
+  .rk.is-night{background:oklch(0.17 0.045 255/.6);box-shadow:none}
+  .rk.is-docked{opacity:1}
+  .rk__rail{left:14px;right:14px;top:50%;bottom:auto;width:auto;height:1px}
+  .rk__fill{width:100%;height:1px;top:0;transform-origin:left;transform:scaleX(var(--fill,0))}
+  .rk__pad{left:0;top:-5px;bottom:auto;width:1px;height:11px}
+  .rk__ticks,.rk__count{display:none}
+  .rk__ship,.rk__ghost{top:4px;width:var(--sh);height:var(--sw)}
+  .rk__body,.rk__ghost>svg{position:absolute;left:0;top:0;width:var(--sw);transform-origin:0 0;transform:translateX(var(--sh)) rotate(90deg)}
+}
+
+.mx .mx-tech{text-align:left;padding-left:18px}
+.lg{display:inline-block;width:10px;height:10px}.lg.on{background:var(--accent)}.lg.p{border:1.5px solid var(--accent)}
+
+/* ══════════════════════════════════════════════════════════════
+   日本語 — tategaki (vertical-rl), lecture de droite à gauche.
+   La prose et les titres sont verticaux ; les sections s'ancrent à droite et
+   se lisent vers la gauche. Données tabulaires (fiches, nomenclature, matrice),
+   code et tags restent en yokogaki (horizontal, gauche → droite).
+══════════════════════════════════════════════════════════════ */
+body.lang-ja{font-family:var(--serif)}
+.lang-ja .wrap{direction:rtl}
+.lang-ja .hero,.lang-ja .hero .wrap{direction:ltr}
+.lang-ja .nav__logo,.lang-ja .lang,.lang-ja .btn,.lang-ja .tags,.lang-ja figure,.lang-ja table,.lang-ja .mx-wrap,.lang-ja .mx-legend,
+.lang-ja .contact__act,.lang-ja .cartouche,.lang-ja .spec,.lang-ja .fiche,.lang-ja .planche,.lang-ja .bom-h,.lang-ja .foot .wrap{direction:ltr}
+.lang-ja .hero__h1{font-weight:300;letter-spacing:.08em}
+.lang-ja .hero__lead{letter-spacing:.03em;line-height:1.9}
+.lang-ja .nav__links{gap:26px;letter-spacing:.06em}
+.lang-ja .spec dd,.lang-ja .fiche dd{font-family:var(--serif);font-weight:300}
+
+/* éléments verticaux */
+.lang-ja .h2,.lang-ja .lead,.lang-ja .profil__body,.lang-ja .card__body,.lang-ja .index a,.lang-ja .dom header,.lang-ja .dom ul,
+.lang-ja .tl li,.lang-ja .post a,.lang-ja .stage{writing-mode:vertical-rl;text-orientation:mixed;line-break:strict;direction:ltr}
+/* le RTL ne sert qu'à l'ordre des blocs ; dans une colonne, le texte va de haut en bas */
+.lang-ja .wordmark,.lang-ja .nav__logo,.lang-ja .foot__name{font-family:var(--sans)}
+.lang-ja .h2{max-width:none;max-height:9em;font-weight:300;font-size:clamp(2rem,3.1vw,2.75rem);line-height:1.45;letter-spacing:.08em}
+.lang-ja .lead{height:14em;max-width:none;margin:0;font-size:16px;line-height:2;letter-spacing:.05em}
+/* tags dans un flux vertical : bloc horizontal compact */
+.lang-ja .card .tags,.lang-ja .index .tags,.lang-ja .tl .tags,.lang-ja .stage .tags{writing-mode:horizontal-tb;width:9.5em;margin:0 18px 0 0;align-content:flex-start}
+
+/* en-tête de section : titre à droite, chapeau à sa gauche */
+.lang-ja .sec-head{display:flex;gap:56px;align-items:flex-start;margin-bottom:64px}
+
+/* PROFIL */
+.lang-ja .profil{align-items:start}
+.lang-ja .profil>div:first-child{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start}
+.lang-ja .profil__body{height:24em;margin:0;max-width:none;font-size:17px;line-height:2.1;letter-spacing:.05em;gap:1.4em}
+.lang-ja .profil .tags{flex-basis:100%;justify-content:flex-end}
+
+/* PROJETS (A) : cartes verticales, index en colonnes */
+.lang-ja .card__body{height:22em;padding:28px 28px 28px 20px}
+.lang-ja .card .meta{gap:10px}
+.lang-ja .card h3{margin:0 14px 0 0;font-size:clamp(1.25rem,1.5vw,1.4rem);letter-spacing:.06em;line-height:1.5}
+.lang-ja .card p{margin:0 16px 0 0;max-width:none;line-height:1.9;letter-spacing:.04em}
+.lang-ja .index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--border-strong)}
+.lang-ja .index a{display:block;width:100%;height:19em;padding:24px 24px;border-bottom:1px solid var(--border);border-left:1px solid var(--border)}
+.lang-ja .index li:nth-child(2n) a{border-left:0}
+.lang-ja .index a>*{margin-left:10px}
+.lang-ja .index h3{letter-spacing:.05em}
+.lang-ja .index h3 small{margin:0 6px 0 0}
+
+/* STACK (A) */
+/* trois bandes empilées : chaque domaine se lit de droite à gauche */
+.lang-ja .stack{grid-template-columns:1fr}
+.lang-ja .dom,.lang-ja .dom+.dom{display:flex;gap:28px;align-items:flex-start;padding:28px 0;border-left:0}
+.lang-ja .dom+.dom{border-top:1px solid var(--border)}
+.lang-ja .dom header{margin:0;gap:12px;letter-spacing:.06em}
+.lang-ja .dom ul{height:19em}
+.lang-ja .dom li{border-top:0;border-left:1px solid var(--border);padding:0 10px}
+.lang-ja .dom li span{margin:0 4px 0 0}
+
+/* PARCOURS (A) : filet à droite, chaque poste se lit en colonnes vers la gauche */
+.lang-ja .tl::before{left:auto;right:3px;background:linear-gradient(var(--accent),transparent)}
+.lang-ja .tl li{display:block;height:23em;padding:0 44px 0 0;margin-bottom:64px}
+.lang-ja .tl li::before{left:auto;right:-1px;top:4px}
+.lang-ja .tl li>div{display:contents}
+.lang-ja .tl .num{padding:0;margin-left:14px}
+.lang-ja .tl h3{margin-left:10px;letter-spacing:.06em}
+.lang-ja .tl .co{margin:0 0 0 18px}
+.lang-ja .tl p.d{margin:0;max-width:none;line-height:1.95;letter-spacing:.04em}
+
+/* ÉCRITS : trois colonnes verticales, de droite à gauche */
+.lang-ja .posts{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--fg)}
+.lang-ja .post a{display:block;width:100%;height:22em;padding:26px 24px;border-bottom:0;border-left:1px solid var(--border)}
+.lang-ja .post:last-child a{border-left:0}
+.lang-ja .post a>*{margin-left:12px}
+.lang-ja .post h3{letter-spacing:.05em;line-height:1.55}
+.lang-ja .post p{margin:0 0 0 0;line-height:1.9;letter-spacing:.04em}
+.lang-ja .post .read{gap:6px}
+
+/* CONTACT */
+.lang-ja .contact .wrap{display:flex;flex-wrap:wrap;gap:56px;align-items:flex-start}
+.lang-ja .contact .lead{height:13em}
+.lang-ja .contact__act{flex:1 1 420px}
+.lang-ja .contact__mail{margin-top:0}
+.lang-ja .contact .kanji.r{right:auto;left:22px}
+
+/* B : planches, lanceur */
+.lang-ja .planche{direction:ltr}
+.lang-ja .stage{min-height:0;height:26em;padding:0 0 0 0;margin-bottom:56px;border-top:0;border-right:1px solid var(--border-strong);padding-right:20px}
+.lang-ja .stage::before{left:auto;right:-1px;top:0;width:2px;height:100%;transform:scaleY(0);transform-origin:top}
+.lang-ja .js-launch .stage.is-on::before{transform:scaleY(1)}
+.lang-ja .stage>*{margin-left:10px}
+.lang-ja .stage .num{margin-top:0}
+.lang-ja .stage h3,.lang-ja .stage .co,.lang-ja .stage p.d{margin-top:0;letter-spacing:.05em}
+.lang-ja .stage p.d{max-width:none;line-height:1.95}
+.lang-ja .callouts{left:auto;right:100%}
+.lang-ja .callouts li{left:auto;right:0}
+.lang-ja .launch__rocket{direction:ltr}
+.lang-ja .callouts{direction:rtl}
+
+@media (max-width:900px){
+  .lang-ja .sec-head{gap:28px}
+  .lang-ja .index,.lang-ja .posts{grid-template-columns:1fr}
+  .lang-ja .index a,.lang-ja .post a{border-left:0;border-bottom:1px solid var(--border)}
+  .lang-ja .dom ul{height:auto;max-height:none;writing-mode:horizontal-tb}
+  .lang-ja .dom li{border-left:0;border-top:1px solid var(--border);padding:12px 0}
+  .lang-ja .dom{flex-direction:column;gap:12px}
+  .lang-ja .dom header{writing-mode:horizontal-tb}
+  .lang-ja .card__body{height:20em}
+  .lang-ja .profil__body{height:22em}
+  .lang-ja .tl li{height:22em;padding-left:0}
+  .lang-ja .stage{height:22em}
+}
+@media (max-width:600px){
+  .lang-ja .index,.lang-ja .posts{grid-template-columns:1fr}
+  .lang-ja .index a,.lang-ja .post a{border-left:0;height:18em}
+  .lang-ja .h2{font-size:1.875rem}
+  .lang-ja .lead{height:12em;font-size:15px}
+  .lang-ja .profil__body{font-size:16px;height:20em}
+  /* téléphone : titres et chapeaux restent en tategaki ; la prose longue passe en yokogaki */
+  .lang-ja .card__body,.lang-ja .index a,.lang-ja .tl li,.lang-ja .post a,.lang-ja .stage,.lang-ja .profil__body{writing-mode:horizontal-tb;height:auto;direction:ltr;text-align:left}
+  .lang-ja .card__body *,.lang-ja .index a *,.lang-ja .tl li *,.lang-ja .post a *,.lang-ja .stage *{text-align:left}
+  .lang-ja .card h3,.lang-ja .card p,.lang-ja .index a>*,.lang-ja .post a>*,.lang-ja .stage>*,.lang-ja .tl .num,.lang-ja .tl h3,.lang-ja .tl .co{margin:6px 0 0}
+  .lang-ja .card .tags,.lang-ja .index .tags,.lang-ja .tl .tags,.lang-ja .stage .tags{width:auto;margin:14px 0 0}
+  .lang-ja .tl li{padding:0 28px 0 0;margin-bottom:40px}
+  .lang-ja .profil__body{display:grid;gap:14px;line-height:1.9}
+  .lang-ja .stage{border-right:0;border-top:1px solid var(--border-strong);padding:20px 0 0}
+  .lang-ja .stage::before{right:auto;left:0;width:100%;height:2px;transform:scaleX(0);transform-origin:right}
+  .lang-ja .js-launch .stage.is-on::before{transform:scaleX(1)}
+  .lang-ja .sec-head{flex-wrap:wrap}
+  .lang-ja .post .cat,.lang-ja .card .meta .num{margin-left:.9em}
+  .lang-ja .stage .lbl,.lang-ja .stage .num{display:block;margin:4px 0 0;line-height:1.5}
+  .lang-ja .stage h3{margin-top:10px;line-height:1.45}
+}
+</style></head>
+<body>
+<!-- MAQUETTE A — Raffinement : même structure, même DA ; texte, mouvement, contraste et affordances corrigés -->
+<div id="app"><a class="skip" href="#main">Aller au contenu</a>
+<nav class="nav" id="nav" aria-label="Navigation"><div class="wrap">
+  <a class="nav__logo" href="#top">PRÉNOM <span>·</span> NOM</a>
+  <ul class="nav__links"><li><a href="#profil">Profil</a></li><li><a href="#projets">Projets</a></li><li><a href="#stack">Compétences</a></li><li><a href="#parcours">Parcours</a></li><li><a href="#ecrits">Écrits</a></li></ul>
+  <div class="nav__right"><div class="lang" role="group" aria-label="Langue"><button type="button" aria-pressed="true" lang="fr">FR</button><button type="button" aria-pressed="false" lang="en">EN</button><button type="button" aria-pressed="false" lang="ja" aria-label="日本語">日</button></div>
+    <a class="btn btn--primary" href="mailto:contact@exemple.com">Écrire un e-mail</a>
+    <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu"><i aria-hidden="true"></i>Menu</button></div></div>
+  <div class="menu" id="menu"><ul><li><a href="#profil">Profil <b>01</b></a></li><li><a href="#projets">Projets <b>02</b></a></li><li><a href="#stack">Compétences <b>03</b></a></li><li><a href="#parcours">Parcours <b>04</b></a></li><li><a href="#ecrits">Écrits <b>05</b></a></li></ul><div class="lang" role="group" aria-label="Langue"><button type="button" aria-pressed="true" lang="fr">FR</button><button type="button" aria-pressed="false" lang="en">EN</button><button type="button" aria-pressed="false" lang="ja" aria-label="日本語">日</button></div>
+    <a class="btn btn--primary" href="mailto:contact@exemple.com">Écrire un e-mail <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div></nav><header class="hero" id="top">
+  <img class="hero__bg" src="bg.jpg" alt="" width="1216" height="832" fetchpriority="high">
+  <div class="hero__veil"></div>
+  <div class="frame" aria-hidden="true"><i class="l"></i><i class="r"></i><i class="t"></i><i class="b"></i><span class="dot t"></span><span class="dot b"></span></div>
+  <div class="kanji l" aria-hidden="true">名前</div><div class="kanji r" aria-hidden="true">Votre texte ici.</div>
+  <div class="hero__content"><div class="ai-logo ai-logo--brand" role="img" aria-label="Prénom Nom"><span class="ai-frame" aria-hidden="true"><svg class="ai-frame-l" viewBox="0 0 70 216"><path class="ai-p-brand" d="M70 4H56Q40 4 37 20L7 186Q2 212 28 212H70"/><path class="ai-p-site" d="M70 .5H48.95L.5 215.5H70"/></svg><svg class="ai-frame-m" viewBox="0 0 10 216" preserveAspectRatio="none"><path class="ai-p-brand" d="M0 4H10M0 212H10"/><path class="ai-p-site" d="M0 .5H10M0 215.5H10"/></svg><svg class="ai-frame-r" viewBox="0 0 70 216"><path class="ai-p-brand" d="M70 4H56Q40 4 37 20L7 186Q2 212 28 212H70"/><path class="ai-p-site" d="M70 .5H48.95L.5 215.5H70"/></svg></span><svg class="ai-a" viewBox="0 0 118 150" aria-hidden="true"><path class="ai-p-brand" fill-rule="evenodd" d="M8 150Q0 150 1.8 142L31.5 12Q34 0 46 0H72Q84 0 86.5 12L116.2 142Q118 150 110 150H96Q88 150 86.2 142L82 122H36L31.8 142Q30 150 22 150ZM46 96L56 46Q59 37 62 46L72 96Z"/><path class="ai-p-site" fill-rule="evenodd" d="M0 150L33.8 0H84.2L118 150H87.9L82 122H36L30.1 150ZM46 96L59 31L72 96Z"/></svg><span class="ai-band ai-band-1" aria-hidden="true"><span>Prénom</span></span><span class="ai-i" aria-hidden="true"></span><span class="ai-band ai-band-2" aria-hidden="true"><span>Nom</span></span></div>
+    <h1 class="hero__h1">Votre texte ici. Votre texte ici. Votre texte ici.</h1><p class="hero__lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p>
+    <div class="hero__actions"><a class="btn btn--light" href="#projets">Voir les projets</a><a class="btn btn--primary" href="mailto:contact@exemple.com">Écrire un e-mail <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div>
+  </div>
+</header><main id="main"><section id="profil" class="sec blueprint" style="--bp:10% 5%" data-section="about" aria-labelledby="profil-h"><div class="wrap"><div class="profil"><div><h2 class="h2" id="profil-h">Votre texte ici. <em>Votre texte ici.</em></h2>
+<div class="profil__body"><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><div class="tags"><span class="tag tag--accent">Tag</span><span class="tag tag--accent">Tag</span><span class="tag tag--accent">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div>
+<dl class="spec"><div><dt>Votre texte ici.</dt><dd>0+</dd><span class="k" aria-hidden="true">Libellé</span></div><div><dt>Libellé</dt><dd>00+</dd><span class="k" aria-hidden="true">Libellé</span></div><div><dt>Votre texte ici.</dt><dd>0</dd><span class="k" aria-hidden="true">Libellé</span></div><div><dt>Votre texte ici. Votre texte ici.</dt><dd>Libellé</dd><span class="k" aria-hidden="true">Libellé</span></div></dl></div></div></section><section id="projets" class="sec sec--alt blueprint" style="--bp:50% 20%" data-section="projects" aria-labelledby="projets-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="projets-h">Libellé <em>Libellé</em></h2><p class="lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><div class="feats"><a class="card" href="#projet-4"><figure><svg class="diag" viewBox="0 0 640 320" role="img" aria-label="Schéma du projet"><defs><pattern id="g1" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="var(--accent)" stroke-opacity=".13" stroke-width=".6"/></pattern><marker id="m1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" fill="var(--accent)"/></marker></defs><rect width="640" height="320" fill="url(#g1)"/><g class="box"><rect x="32" y="64" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="86" class="t-lbl">Bloc</text></g><path class="trace" pathLength="1" d="M136 86 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="32" y="136" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="158" class="t-lbl">Bloc</text></g><path class="trace" pathLength="1" d="M136 158 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="32" y="208" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="230" class="t-lbl">Bloc</text></g><path class="trace" pathLength="1" d="M136 230 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="222" y="56" width="196" height="208" class="trace" pathLength="1" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.2"/><text x="234" y="78" class="t-lbl">Bloc</text></g><g class="box"><rect x="244" y="150" width="112" height="48" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="256" y="172" class="t-lbl">Bloc</text><text x="256" y="188" class="t-sub">Bloc</text></g><path class="trace" pathLength="1" d="M418 110 H480" fill="none" stroke="var(--accent)" stroke-width="1.4" marker-end="url(#m1)"/><text x="424" y="76" class="t-sub">Bloc</text><g class="box"><rect x="482" y="84" width="138" height="52" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="494" y="106" class="t-lbl">Bloc</text></g><path class="trace" pathLength="1" d="M551 136 V190" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="466" y="192" width="158" height="52" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="478" y="214" class="t-lbl">Bloc</text></g><path class="trace" pathLength="1" d="M466 232 H446 V292 H320 V266" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#m1)"/><text x="340" y="286" class="t-sub">Bloc</text></svg></figure><div class="card__body">
+<p class="meta"><span>Libellé</span><span class="num">0000</span></p>
+<h3><span>Votre texte ici. Votre texte ici. Votre texte ici.</span><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></h3><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></a><a class="card" href="#projet-1"><figure><svg class="diag" viewBox="0 0 640 320" role="img" aria-label="Schéma du projet"><defs><pattern id="g2" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="var(--accent)" stroke-opacity=".13" stroke-width=".6"/></pattern><marker id="m2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" fill="var(--accent)"/></marker></defs><rect width="640" height="320" fill="url(#g2)"/><text x="28" y="94" class="t-lbl">Bloc</text><line class="trace" pathLength="1" x1="132" y1="106" x2="612" y2="106" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><text x="28" y="164" class="t-lbl">Bloc</text><line class="trace" pathLength="1" x1="132" y1="176" x2="612" y2="176" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><text x="28" y="234" class="t-lbl">Bloc</text><line class="trace" pathLength="1" x1="132" y1="246" x2="612" y2="246" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><g class="box"><rect x="132" y="218" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="212" y="78" width="60" height="28" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="276" y="148" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="356" y="218" width="60" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="420" y="78" width="44" height="28" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="468" y="218" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="548" y="148" width="48" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><path class="trace" pathLength="1" d="M212 274 V112" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#m2)"/><path class="trace" pathLength="1" d="M420 274 V112" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#m2)"/><text x="218" y="290" class="t-sub">Bloc</text><text x="426" y="290" class="t-sub">Bloc</text><line class="trace" pathLength="1" x1="132" y1="270" x2="612" y2="270" stroke="var(--ink)" stroke-width="1"/><g class="box"><path d="M470 40 H612 M470 34 V46 M612 34 V46" fill="none" stroke="var(--ink)" stroke-width="1"/><text x="472" y="28" class="t-lbl">Bloc</text></g><text x="132" y="28" class="t-lbl">Bloc</text></svg></figure><div class="card__body">
+<p class="meta"><span>Libellé</span><span class="num">0000</span></p>
+<h3><span>Votre texte ici. Votre texte ici.</span><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></h3><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></a></div><ol class="index"><li><a href="#projet-0"><span class="num">0000</span><h3>Libellé<small>Votre texte ici. Votre texte ici.</small></h3>
+<span class="cat">Libellé</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-2"><span class="num">0000</span><h3>Libellé<small>Votre texte ici. Votre texte ici.</small></h3>
+<span class="cat">Libellé</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-3"><span class="num">0000</span><h3>Libellé<small>Votre texte ici. Votre texte ici.</small></h3>
+<span class="cat">Votre texte ici.</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-5"><span class="num">0000</span><h3>Libellé<small>Votre texte ici. Votre texte ici. Votre texte ici.</small></h3>
+<span class="cat">Libellé</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li></ol></div></section><section id="stack" class="sec blueprint" style="--bp:80% 10%" data-section="skills" aria-labelledby="stack-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="stack-h">Libellé <em>Libellé</em></h2><p class="lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><div class="stack"><div class="dom"><header><span class="code">Libellé</span><h3>Libellé</h3></header><ul><li><b>Votre texte ici.</b><span>Votre texte ici. Votre texte ici. Votre texte ici.</span></li><li><b>Libellé</b><span>Votre texte ici.</span></li><li><b>Votre texte ici.</b><span>Libellé</span></li><li><b>Votre texte ici.</b><span>Libellé</span></li><li><b>Libellé</b><span class="none" aria-label="aucun projet listé">—</span></li></ul></div><div class="dom"><header><span class="code">Libellé</span><h3>Votre texte ici.</h3></header><ul><li><b>Libellé</b><span>Votre texte ici. Votre texte ici.</span></li><li><b>Votre texte ici.</b><span>Votre texte ici. Votre texte ici.</span></li><li><b>Votre texte ici.</b><span>Votre texte ici.</span></li><li><b>Libellé</b><span class="none" aria-label="aucun projet listé">—</span></li><li><b>Votre texte ici. Votre texte ici.</b><span>Votre texte ici.</span></li></ul></div><div class="dom"><header><span class="code">Libellé</span><h3>Votre texte ici.</h3></header><ul><li><b>Libellé</b><span>Libellé</span></li><li><b>Votre texte ici.</b><span>Votre texte ici.</span></li><li><b>Libellé</b><span>Votre texte ici. Votre texte ici.</span></li><li><b>Votre texte ici.</b><span class="none" aria-label="aucun projet listé">—</span></li><li><b>Votre texte ici.</b><span class="none" aria-label="aucun projet listé">—</span></li></ul></div></div></div></section><section id="parcours" class="sec sec--alt blueprint" style="--bp:20% 60%" data-section="experience" aria-labelledby="parcours-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="parcours-h">Libellé <em>Libellé</em></h2><p class="lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><ol class="tl"><li><span class="num">Libellé</span><div><h3>Votre texte ici.</h3><p class="co">Votre texte ici. Votre texte ici.</p>
+<p class="d">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li><li><span class="num">0000 — 0000</span><div><h3>Votre texte ici. Votre texte ici.</h3><p class="co">Votre texte ici. Votre texte ici.</p>
+<p class="d">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li><li><span class="num">0000 — 0000</span><div><h3>Votre texte ici. Votre texte ici.</h3><p class="co">Votre texte ici. Votre texte ici.</p>
+<p class="d">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li><li><span class="num">0000 — 0000</span><div><h3>Votre texte ici. Votre texte ici. Votre texte ici.</h3><p class="co">Votre texte ici. Votre texte ici. Votre texte ici.</p>
+<p class="d">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li></ol></div></section><section id="ecrits" class="sec blueprint" style="--bp:70% 80%" data-section="blog" aria-labelledby="ecrits-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="ecrits-h">Libellé <em>Libellé</em></h2><p class="lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><ul class="posts"><li class="post"><a href="#article-0"><span class="num">Libellé</span><span class="cat">Libellé</span>
+<div><h3>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</h3><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><span class="read">Libellé <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li><li class="post"><a href="#article-1"><span class="num">Libellé</span><span class="cat">Libellé</span>
+<div><h3>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</h3><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><span class="read">Libellé <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li><li class="post"><a href="#article-2"><span class="num">Libellé</span><span class="cat">Libellé</span>
+<div><h3>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</h3><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><span class="read">Libellé <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li></ul></div></section><section id="contact" class="sec contact blueprint on-night" style="--bp:40% 40%" data-section="blog" aria-labelledby="contact-h"><div class="wrap">
+  <div class="kanji r" aria-hidden="true">Libellé</div>
+  <h2 class="h2" id="contact-h">Libellé <em>Libellé</em></h2><p class="lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p>
+  <div class="contact__act"><a class="contact__mail" href="mailto:contact@exemple.com">Libellé<wbr><span style="white-space:nowrap">Votre texte ici.</span></a>
+  <div class="contact__links"><a class="link" href="#github">Libellé <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 11L11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a><a class="link" href="#linkedin">Libellé <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 11L11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div></div>
+</div></section></main><footer class="foot"><div class="wrap"><p class="foot__name">Libellé <span>Libellé</span> Libellé</p><p>Votre texte ici. Votre texte ici.</p></div></footer></div><nav class="rk" id="rk" aria-label="Progression de lecture" data-k="0">
+  <div class="rk__rail" aria-hidden="true"><i class="rk__fill"></i><i class="rk__pad"></i></div>
+  <ol class="rk__ticks"><li data-k="1"><a href="#profil"><span class="rk__lbl"><b>01</b> Profil</span></a></li><li data-k="2"><a href="#projets"><span class="rk__lbl"><b>02</b> Projets</span></a></li><li data-k="3"><a href="#stack"><span class="rk__lbl"><b>03</b> Compétences</span></a></li><li data-k="4"><a href="#parcours"><span class="rk__lbl"><b>04</b> Parcours</span></a></li><li data-k="5"><a href="#ecrits"><span class="rk__lbl"><b>05</b> Écrits</span></a></li></ol>
+  <div class="rk__ghosts" aria-hidden="true"><div class="rk__ghost" data-k="2"><svg class="rk__svg" aria-hidden="true" focusable="false" viewBox="0 0 30 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="rkhg2" width="2.6" height="2.6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="2.6" stroke="var(--ink)" stroke-width="0.6"/>
+    </pattern>
+  </defs>
+
+  <!-- Center axis -->
+  <line class="rpart-axis" style="display:none" x1="15" y1="1" x2="15" y2="97"
+        stroke="var(--accent)" stroke-width="1" opacity="0.55"
+        stroke-dasharray="4,1.5,0.8,1.5"/>
+
+  <!-- FAIRING -->
+  <g class="rpart rpart-fairing" data-p="fairing" style="display:none">
+    <path d="M15,2.5 C11.8,10.5 10,17.5 10,28 L20,28 C20,17.5 18.2,10.5 15,2.5 Z"
+          fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>
+    <line x1="15" y1="4" x2="15" y2="27" stroke="var(--ink)" stroke-width="0.4" opacity="0.3" stroke-dasharray="1,1.8"/>
+    <line x1="9" y1="28" x2="21" y2="28" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="9"  y1="26.3" x2="9"  y2="29.7" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="21" y1="26.3" x2="21" y2="29.7" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- UPPER STAGE -->
+  <g class="rpart rpart-upper" data-p="upper" style="display:none">
+    <rect x="10" y="28" width="10" height="18" fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="10" y1="38.5" x2="20" y2="38.5" stroke="var(--ink)" stroke-width="0.4" opacity="0.35"/>
+    <rect x="8.2" y="31" width="1.8" height="3.2" fill="var(--ink)" opacity="0.65"/>
+    <rect x="20"  y="31" width="1.8" height="3.2" fill="var(--ink)" opacity="0.65"/>
+    <rect x="7.5" y="46" width="15" height="5" fill="url(#rkhg2)" stroke="var(--ink)" stroke-width="1.3"/>
+    <line x1="6.5"  y1="51" x2="6.5"  y2="53.4" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="23.5" y1="51" x2="23.5" y2="53.4" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- LOWER STAGE -->
+  <g class="rpart rpart-lower" data-p="lower" style="display:none">
+    <rect x="10" y="51" width="10" height="23" fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="10" y1="62.5" x2="20" y2="62.5" stroke="var(--ink)" stroke-width="0.4" opacity="0.3"/>
+    <!-- Grid fin L -->
+    <rect x="3" y="53.5" width="6.5" height="8" fill="oklch(0.86 0.025 255)" stroke="var(--ink)" stroke-width="1.1"/>
+    <line x1="4.6" y1="53.5" x2="4.6" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="6.3" y1="53.5" x2="6.3" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="8"   y1="53.5" x2="8"   y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <!-- Grid fin R -->
+    <rect x="20.5" y="53.5" width="6.5" height="8" fill="oklch(0.86 0.025 255)" stroke="var(--ink)" stroke-width="1.1"/>
+    <line x1="22.2" y1="53.5" x2="22.2" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="23.9" y1="53.5" x2="23.9" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="25.6" y1="53.5" x2="25.6" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <!-- Landing legs -->
+    <line x1="10.5" y1="70" x2="7"  y2="77" stroke="var(--ink)" stroke-width="1.3" stroke-linecap="round"/>
+    <line x1="19.5" y1="70" x2="23" y2="77" stroke="var(--ink)" stroke-width="1.3" stroke-linecap="round"/>
+    <line x1="7"  y1="77" x2="9.5"  y2="73.5" stroke="var(--ink)" stroke-width="0.7" opacity="0.5"/>
+    <line x1="23" y1="77" x2="20.5" y2="73.5" stroke="var(--ink)" stroke-width="0.7" opacity="0.5"/>
+    <line x1="8.5"  y1="72.3" x2="8.5"  y2="75.7" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="21.5" y1="72.3" x2="21.5" y2="75.7" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- ENGINE -->
+  <g class="rpart rpart-engine" data-p="engine">
+    <path d="M9,74 L7.5,80 L22.5,80 L21,74 Z"
+          fill="url(#rkhg2)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M13,80 Q15,85.5 17,80 L16.5,88 Q15,89.5 13.5,88 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M8.5,80 Q10,84 11.5,80 L11,86.5 Q10,87.5 9,86.5 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1" opacity="0.75"/>
+    <path d="M18.5,80 Q20,84 21.5,80 L21,86.5 Q20,87.5 19,86.5 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1" opacity="0.75"/>
+    <line x1="7.5" y1="80" x2="22.5" y2="80" stroke="var(--ink)" stroke-width="0.8" opacity="0.5"/>
+  </g>
+
+  <!-- FLAME -->
+  <g class="rpart rpart-flame" data-p="flame">
+    <path d="M9,88 C5.5,96 6.5,109 15,113 C23.5,109 24.5,96 21,88 Q18,93 15,93 Q12,93 9,88 Z"
+          fill="oklch(0.85 0.14 58)" opacity="0.40"/>
+    <path d="M11,88 C8.2,95 9,106 15,110 C21,106 21.8,95 19,88 Q17,92 15,92 Q13,92 11,88 Z"
+          fill="oklch(0.88 0.15 55)" opacity="0.55"/>
+    <path d="M12.5,88 C10.5,94.5 11,105 15,107.5 C19,105 19.5,94.5 17.5,88 Q16.2,91 15,91 Q13.8,91 12.5,88 Z"
+          fill="oklch(0.72 0.22 235)" opacity="0.85"/>
+    <line x1="13" y1="95" x2="17" y2="95" stroke="var(--ink)" stroke-width="0.5" opacity="0.35"/>
+    <line x1="15" y1="93.3" x2="15" y2="96.7" stroke="var(--ink)" stroke-width="0.5" opacity="0.35"/>
+  </g>
+</svg></div><div class="rk__ghost" data-k="3"><svg class="rk__svg" aria-hidden="true" focusable="false" viewBox="0 0 30 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="rkhg3" width="2.6" height="2.6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="2.6" stroke="var(--ink)" stroke-width="0.6"/>
+    </pattern>
+  </defs>
+
+  <!-- Center axis -->
+  <line class="rpart-axis" style="display:none" x1="15" y1="1" x2="15" y2="97"
+        stroke="var(--accent)" stroke-width="1" opacity="0.55"
+        stroke-dasharray="4,1.5,0.8,1.5"/>
+
+  <!-- FAIRING -->
+  <g class="rpart rpart-fairing" data-p="fairing" style="display:none">
+    <path d="M15,2.5 C11.8,10.5 10,17.5 10,28 L20,28 C20,17.5 18.2,10.5 15,2.5 Z"
+          fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>
+    <line x1="15" y1="4" x2="15" y2="27" stroke="var(--ink)" stroke-width="0.4" opacity="0.3" stroke-dasharray="1,1.8"/>
+    <line x1="9" y1="28" x2="21" y2="28" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="9"  y1="26.3" x2="9"  y2="29.7" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="21" y1="26.3" x2="21" y2="29.7" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- UPPER STAGE -->
+  <g class="rpart rpart-upper" data-p="upper" style="display:none">
+    <rect x="10" y="28" width="10" height="18" fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="10" y1="38.5" x2="20" y2="38.5" stroke="var(--ink)" stroke-width="0.4" opacity="0.35"/>
+    <rect x="8.2" y="31" width="1.8" height="3.2" fill="var(--ink)" opacity="0.65"/>
+    <rect x="20"  y="31" width="1.8" height="3.2" fill="var(--ink)" opacity="0.65"/>
+    <rect x="7.5" y="46" width="15" height="5" fill="url(#rkhg3)" stroke="var(--ink)" stroke-width="1.3"/>
+    <line x1="6.5"  y1="51" x2="6.5"  y2="53.4" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="23.5" y1="51" x2="23.5" y2="53.4" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- LOWER STAGE -->
+  <g class="rpart rpart-lower" data-p="lower">
+    <rect x="10" y="51" width="10" height="23" fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="10" y1="62.5" x2="20" y2="62.5" stroke="var(--ink)" stroke-width="0.4" opacity="0.3"/>
+    <!-- Grid fin L -->
+    <rect x="3" y="53.5" width="6.5" height="8" fill="oklch(0.86 0.025 255)" stroke="var(--ink)" stroke-width="1.1"/>
+    <line x1="4.6" y1="53.5" x2="4.6" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="6.3" y1="53.5" x2="6.3" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="8"   y1="53.5" x2="8"   y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <!-- Grid fin R -->
+    <rect x="20.5" y="53.5" width="6.5" height="8" fill="oklch(0.86 0.025 255)" stroke="var(--ink)" stroke-width="1.1"/>
+    <line x1="22.2" y1="53.5" x2="22.2" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="23.9" y1="53.5" x2="23.9" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="25.6" y1="53.5" x2="25.6" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <!-- Landing legs -->
+    <line x1="10.5" y1="70" x2="7"  y2="77" stroke="var(--ink)" stroke-width="1.3" stroke-linecap="round"/>
+    <line x1="19.5" y1="70" x2="23" y2="77" stroke="var(--ink)" stroke-width="1.3" stroke-linecap="round"/>
+    <line x1="7"  y1="77" x2="9.5"  y2="73.5" stroke="var(--ink)" stroke-width="0.7" opacity="0.5"/>
+    <line x1="23" y1="77" x2="20.5" y2="73.5" stroke="var(--ink)" stroke-width="0.7" opacity="0.5"/>
+    <line x1="8.5"  y1="72.3" x2="8.5"  y2="75.7" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="21.5" y1="72.3" x2="21.5" y2="75.7" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- ENGINE -->
+  <g class="rpart rpart-engine" data-p="engine" style="display:none">
+    <path d="M9,74 L7.5,80 L22.5,80 L21,74 Z"
+          fill="url(#rkhg3)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M13,80 Q15,85.5 17,80 L16.5,88 Q15,89.5 13.5,88 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M8.5,80 Q10,84 11.5,80 L11,86.5 Q10,87.5 9,86.5 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1" opacity="0.75"/>
+    <path d="M18.5,80 Q20,84 21.5,80 L21,86.5 Q20,87.5 19,86.5 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1" opacity="0.75"/>
+    <line x1="7.5" y1="80" x2="22.5" y2="80" stroke="var(--ink)" stroke-width="0.8" opacity="0.5"/>
+  </g>
+
+  <!-- FLAME -->
+  <g class="rpart rpart-flame" data-p="flame" style="display:none">
+    <path d="M9,88 C5.5,96 6.5,109 15,113 C23.5,109 24.5,96 21,88 Q18,93 15,93 Q12,93 9,88 Z"
+          fill="oklch(0.85 0.14 58)" opacity="0.40"/>
+    <path d="M11,88 C8.2,95 9,106 15,110 C21,106 21.8,95 19,88 Q17,92 15,92 Q13,92 11,88 Z"
+          fill="oklch(0.88 0.15 55)" opacity="0.55"/>
+    <path d="M12.5,88 C10.5,94.5 11,105 15,107.5 C19,105 19.5,94.5 17.5,88 Q16.2,91 15,91 Q13.8,91 12.5,88 Z"
+          fill="oklch(0.72 0.22 235)" opacity="0.85"/>
+    <line x1="13" y1="95" x2="17" y2="95" stroke="var(--ink)" stroke-width="0.5" opacity="0.35"/>
+    <line x1="15" y1="93.3" x2="15" y2="96.7" stroke="var(--ink)" stroke-width="0.5" opacity="0.35"/>
+  </g>
+</svg></div><div class="rk__ghost" data-k="4"><svg class="rk__svg" aria-hidden="true" focusable="false" viewBox="0 0 30 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="rkhg4" width="2.6" height="2.6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="2.6" stroke="var(--ink)" stroke-width="0.6"/>
+    </pattern>
+  </defs>
+
+  <!-- Center axis -->
+  <line class="rpart-axis" style="display:none" x1="15" y1="1" x2="15" y2="97"
+        stroke="var(--accent)" stroke-width="1" opacity="0.55"
+        stroke-dasharray="4,1.5,0.8,1.5"/>
+
+  <!-- FAIRING -->
+  <g class="rpart rpart-fairing" data-p="fairing" style="display:none">
+    <path d="M15,2.5 C11.8,10.5 10,17.5 10,28 L20,28 C20,17.5 18.2,10.5 15,2.5 Z"
+          fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>
+    <line x1="15" y1="4" x2="15" y2="27" stroke="var(--ink)" stroke-width="0.4" opacity="0.3" stroke-dasharray="1,1.8"/>
+    <line x1="9" y1="28" x2="21" y2="28" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="9"  y1="26.3" x2="9"  y2="29.7" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="21" y1="26.3" x2="21" y2="29.7" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- UPPER STAGE -->
+  <g class="rpart rpart-upper" data-p="upper">
+    <rect x="10" y="28" width="10" height="18" fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="10" y1="38.5" x2="20" y2="38.5" stroke="var(--ink)" stroke-width="0.4" opacity="0.35"/>
+    <rect x="8.2" y="31" width="1.8" height="3.2" fill="var(--ink)" opacity="0.65"/>
+    <rect x="20"  y="31" width="1.8" height="3.2" fill="var(--ink)" opacity="0.65"/>
+    <rect x="7.5" y="46" width="15" height="5" fill="url(#rkhg4)" stroke="var(--ink)" stroke-width="1.3"/>
+    <line x1="6.5"  y1="51" x2="6.5"  y2="53.4" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="23.5" y1="51" x2="23.5" y2="53.4" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- LOWER STAGE -->
+  <g class="rpart rpart-lower" data-p="lower" style="display:none">
+    <rect x="10" y="51" width="10" height="23" fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="10" y1="62.5" x2="20" y2="62.5" stroke="var(--ink)" stroke-width="0.4" opacity="0.3"/>
+    <!-- Grid fin L -->
+    <rect x="3" y="53.5" width="6.5" height="8" fill="oklch(0.86 0.025 255)" stroke="var(--ink)" stroke-width="1.1"/>
+    <line x1="4.6" y1="53.5" x2="4.6" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="6.3" y1="53.5" x2="6.3" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="8"   y1="53.5" x2="8"   y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <!-- Grid fin R -->
+    <rect x="20.5" y="53.5" width="6.5" height="8" fill="oklch(0.86 0.025 255)" stroke="var(--ink)" stroke-width="1.1"/>
+    <line x1="22.2" y1="53.5" x2="22.2" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="23.9" y1="53.5" x2="23.9" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="25.6" y1="53.5" x2="25.6" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <!-- Landing legs -->
+    <line x1="10.5" y1="70" x2="7"  y2="77" stroke="var(--ink)" stroke-width="1.3" stroke-linecap="round"/>
+    <line x1="19.5" y1="70" x2="23" y2="77" stroke="var(--ink)" stroke-width="1.3" stroke-linecap="round"/>
+    <line x1="7"  y1="77" x2="9.5"  y2="73.5" stroke="var(--ink)" stroke-width="0.7" opacity="0.5"/>
+    <line x1="23" y1="77" x2="20.5" y2="73.5" stroke="var(--ink)" stroke-width="0.7" opacity="0.5"/>
+    <line x1="8.5"  y1="72.3" x2="8.5"  y2="75.7" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="21.5" y1="72.3" x2="21.5" y2="75.7" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- ENGINE -->
+  <g class="rpart rpart-engine" data-p="engine" style="display:none">
+    <path d="M9,74 L7.5,80 L22.5,80 L21,74 Z"
+          fill="url(#rkhg4)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M13,80 Q15,85.5 17,80 L16.5,88 Q15,89.5 13.5,88 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M8.5,80 Q10,84 11.5,80 L11,86.5 Q10,87.5 9,86.5 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1" opacity="0.75"/>
+    <path d="M18.5,80 Q20,84 21.5,80 L21,86.5 Q20,87.5 19,86.5 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1" opacity="0.75"/>
+    <line x1="7.5" y1="80" x2="22.5" y2="80" stroke="var(--ink)" stroke-width="0.8" opacity="0.5"/>
+  </g>
+
+  <!-- FLAME -->
+  <g class="rpart rpart-flame" data-p="flame" style="display:none">
+    <path d="M9,88 C5.5,96 6.5,109 15,113 C23.5,109 24.5,96 21,88 Q18,93 15,93 Q12,93 9,88 Z"
+          fill="oklch(0.85 0.14 58)" opacity="0.40"/>
+    <path d="M11,88 C8.2,95 9,106 15,110 C21,106 21.8,95 19,88 Q17,92 15,92 Q13,92 11,88 Z"
+          fill="oklch(0.88 0.15 55)" opacity="0.55"/>
+    <path d="M12.5,88 C10.5,94.5 11,105 15,107.5 C19,105 19.5,94.5 17.5,88 Q16.2,91 15,91 Q13.8,91 12.5,88 Z"
+          fill="oklch(0.72 0.22 235)" opacity="0.85"/>
+    <line x1="13" y1="95" x2="17" y2="95" stroke="var(--ink)" stroke-width="0.5" opacity="0.35"/>
+    <line x1="15" y1="93.3" x2="15" y2="96.7" stroke="var(--ink)" stroke-width="0.5" opacity="0.35"/>
+  </g>
+</svg></div></div>
+  <div class="rk__ship" aria-hidden="true"><div class="rk__body"><svg class="rk__svg" aria-hidden="true" focusable="false" viewBox="0 0 30 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="rkhs" width="2.6" height="2.6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="2.6" stroke="var(--ink)" stroke-width="0.6"/>
+    </pattern>
+  </defs>
+
+  <!-- Center axis -->
+  <line class="rpart-axis" x1="15" y1="1" x2="15" y2="97"
+        stroke="var(--accent)" stroke-width="1" opacity="0.55"
+        stroke-dasharray="4,1.5,0.8,1.5"/>
+
+  <!-- FAIRING -->
+  <g class="rpart rpart-fairing" data-p="fairing">
+    <path d="M15,2.5 C11.8,10.5 10,17.5 10,28 L20,28 C20,17.5 18.2,10.5 15,2.5 Z"
+          fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>
+    <line x1="15" y1="4" x2="15" y2="27" stroke="var(--ink)" stroke-width="0.4" opacity="0.3" stroke-dasharray="1,1.8"/>
+    <line x1="9" y1="28" x2="21" y2="28" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="9"  y1="26.3" x2="9"  y2="29.7" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="21" y1="26.3" x2="21" y2="29.7" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- UPPER STAGE -->
+  <g class="rpart rpart-upper" data-p="upper">
+    <rect x="10" y="28" width="10" height="18" fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="10" y1="38.5" x2="20" y2="38.5" stroke="var(--ink)" stroke-width="0.4" opacity="0.35"/>
+    <rect x="8.2" y="31" width="1.8" height="3.2" fill="var(--ink)" opacity="0.65"/>
+    <rect x="20"  y="31" width="1.8" height="3.2" fill="var(--ink)" opacity="0.65"/>
+    <rect x="7.5" y="46" width="15" height="5" fill="url(#rkhs)" stroke="var(--ink)" stroke-width="1.3"/>
+    <line x1="6.5"  y1="51" x2="6.5"  y2="53.4" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="23.5" y1="51" x2="23.5" y2="53.4" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- LOWER STAGE -->
+  <g class="rpart rpart-lower" data-p="lower">
+    <rect x="10" y="51" width="10" height="23" fill="oklch(0.90 0.02 255)" stroke="var(--ink)" stroke-width="1.5"/>
+    <line x1="10" y1="62.5" x2="20" y2="62.5" stroke="var(--ink)" stroke-width="0.4" opacity="0.3"/>
+    <!-- Grid fin L -->
+    <rect x="3" y="53.5" width="6.5" height="8" fill="oklch(0.86 0.025 255)" stroke="var(--ink)" stroke-width="1.1"/>
+    <line x1="4.6" y1="53.5" x2="4.6" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="6.3" y1="53.5" x2="6.3" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="8"   y1="53.5" x2="8"   y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <!-- Grid fin R -->
+    <rect x="20.5" y="53.5" width="6.5" height="8" fill="oklch(0.86 0.025 255)" stroke="var(--ink)" stroke-width="1.1"/>
+    <line x1="22.2" y1="53.5" x2="22.2" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="23.9" y1="53.5" x2="23.9" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <line x1="25.6" y1="53.5" x2="25.6" y2="61.5" stroke="var(--ink)" stroke-width="0.35" opacity="0.7"/>
+    <!-- Landing legs -->
+    <line x1="10.5" y1="70" x2="7"  y2="77" stroke="var(--ink)" stroke-width="1.3" stroke-linecap="round"/>
+    <line x1="19.5" y1="70" x2="23" y2="77" stroke="var(--ink)" stroke-width="1.3" stroke-linecap="round"/>
+    <line x1="7"  y1="77" x2="9.5"  y2="73.5" stroke="var(--ink)" stroke-width="0.7" opacity="0.5"/>
+    <line x1="23" y1="77" x2="20.5" y2="73.5" stroke="var(--ink)" stroke-width="0.7" opacity="0.5"/>
+    <line x1="8.5"  y1="72.3" x2="8.5"  y2="75.7" stroke="var(--ink)" stroke-width="0.9"/>
+    <line x1="21.5" y1="72.3" x2="21.5" y2="75.7" stroke="var(--ink)" stroke-width="0.9"/>
+  </g>
+
+  <!-- ENGINE -->
+  <g class="rpart rpart-engine" data-p="engine">
+    <path d="M9,74 L7.5,80 L22.5,80 L21,74 Z"
+          fill="url(#rkhs)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M13,80 Q15,85.5 17,80 L16.5,88 Q15,89.5 13.5,88 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M8.5,80 Q10,84 11.5,80 L11,86.5 Q10,87.5 9,86.5 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1" opacity="0.75"/>
+    <path d="M18.5,80 Q20,84 21.5,80 L21,86.5 Q20,87.5 19,86.5 Z"
+          fill="oklch(0.84 0.02 255)" stroke="var(--ink)" stroke-width="1" opacity="0.75"/>
+    <line x1="7.5" y1="80" x2="22.5" y2="80" stroke="var(--ink)" stroke-width="0.8" opacity="0.5"/>
+  </g>
+
+  <!-- FLAME -->
+  <g class="rpart rpart-flame" data-p="flame">
+    <path d="M9,88 C5.5,96 6.5,109 15,113 C23.5,109 24.5,96 21,88 Q18,93 15,93 Q12,93 9,88 Z"
+          fill="oklch(0.85 0.14 58)" opacity="0.40"/>
+    <path d="M11,88 C8.2,95 9,106 15,110 C21,106 21.8,95 19,88 Q17,92 15,92 Q13,92 11,88 Z"
+          fill="oklch(0.88 0.15 55)" opacity="0.55"/>
+    <path d="M12.5,88 C10.5,94.5 11,105 15,107.5 C19,105 19.5,94.5 17.5,88 Q16.2,91 15,91 Q13.8,91 12.5,88 Z"
+          fill="oklch(0.72 0.22 235)" opacity="0.85"/>
+    <line x1="13" y1="95" x2="17" y2="95" stroke="var(--ink)" stroke-width="0.5" opacity="0.35"/>
+    <line x1="15" y1="93.3" x2="15" y2="96.7" stroke="var(--ink)" stroke-width="0.5" opacity="0.35"/>
+  </g>
+</svg></div></div>
+  <p class="rk__count" aria-hidden="true"><b>00</b> / 05<span></span></p>
+</nav>
+<template id="tpl-fr" data-title="Prénom Nom — Intitulé du poste"><a class="skip" href="#main">Aller au contenu</a>
+<nav class="nav" id="nav" aria-label="Navigation"><div class="wrap">
+  <a class="nav__logo" href="#top">PRÉNOM <span>·</span> NOM</a>
+  <ul class="nav__links"><li><a href="#profil">Profil</a></li><li><a href="#projets">Projets</a></li><li><a href="#stack">Compétences</a></li><li><a href="#parcours">Parcours</a></li><li><a href="#ecrits">Écrits</a></li></ul>
+  <div class="nav__right"><div class="lang" role="group" aria-label="Langue"><button type="button" aria-pressed="true" lang="fr">FR</button><button type="button" aria-pressed="false" lang="en">EN</button><button type="button" aria-pressed="false" lang="ja" aria-label="日本語">日</button></div>
+    <a class="btn btn--primary" href="mailto:contact@exemple.com">Écrire un e-mail</a>
+    <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu"><i aria-hidden="true"></i>Menu</button></div></div>
+  <div class="menu" id="menu"><ul><li><a href="#profil">Profil <b>01</b></a></li><li><a href="#projets">Projets <b>02</b></a></li><li><a href="#stack">Compétences <b>03</b></a></li><li><a href="#parcours">Parcours <b>04</b></a></li><li><a href="#ecrits">Écrits <b>05</b></a></li></ul><div class="lang" role="group" aria-label="Langue"><button type="button" aria-pressed="true" lang="fr">FR</button><button type="button" aria-pressed="false" lang="en">EN</button><button type="button" aria-pressed="false" lang="ja" aria-label="日本語">日</button></div>
+    <a class="btn btn--primary" href="mailto:contact@exemple.com">Écrire un e-mail <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div></nav><header class="hero" id="top">
+  <img class="hero__bg" src="bg.jpg" alt="" width="1216" height="832" fetchpriority="high">
+  <div class="hero__veil"></div>
+  <div class="frame" aria-hidden="true"><i class="l"></i><i class="r"></i><i class="t"></i><i class="b"></i><span class="dot t"></span><span class="dot b"></span></div>
+  <div class="kanji l" aria-hidden="true">名前</div><div class="kanji r" aria-hidden="true">Votre texte ici.</div>
+  <div class="hero__content"><div class="ai-logo ai-logo--brand" role="img" aria-label="Prénom Nom"><span class="ai-frame" aria-hidden="true"><svg class="ai-frame-l" viewBox="0 0 70 216"><path class="ai-p-brand" d="M70 4H56Q40 4 37 20L7 186Q2 212 28 212H70"/><path class="ai-p-site" d="M70 .5H48.95L.5 215.5H70"/></svg><svg class="ai-frame-m" viewBox="0 0 10 216" preserveAspectRatio="none"><path class="ai-p-brand" d="M0 4H10M0 212H10"/><path class="ai-p-site" d="M0 .5H10M0 215.5H10"/></svg><svg class="ai-frame-r" viewBox="0 0 70 216"><path class="ai-p-brand" d="M70 4H56Q40 4 37 20L7 186Q2 212 28 212H70"/><path class="ai-p-site" d="M70 .5H48.95L.5 215.5H70"/></svg></span><svg class="ai-a" viewBox="0 0 118 150" aria-hidden="true"><path class="ai-p-brand" fill-rule="evenodd" d="M8 150Q0 150 1.8 142L31.5 12Q34 0 46 0H72Q84 0 86.5 12L116.2 142Q118 150 110 150H96Q88 150 86.2 142L82 122H36L31.8 142Q30 150 22 150ZM46 96L56 46Q59 37 62 46L72 96Z"/><path class="ai-p-site" fill-rule="evenodd" d="M0 150L33.8 0H84.2L118 150H87.9L82 122H36L30.1 150ZM46 96L59 31L72 96Z"/></svg><span class="ai-band ai-band-1" aria-hidden="true"><span>Prénom</span></span><span class="ai-i" aria-hidden="true"></span><span class="ai-band ai-band-2" aria-hidden="true"><span>Nom</span></span></div>
+    <h1 class="hero__h1">Votre texte ici. Votre texte ici. Votre texte ici.</h1><p class="hero__lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p>
+    <div class="hero__actions"><a class="btn btn--light" href="#projets">Voir les projets</a><a class="btn btn--primary" href="mailto:contact@exemple.com">Écrire un e-mail <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div>
+  </div>
+</header><main id="main"><section id="profil" class="sec blueprint" style="--bp:10% 5%" data-section="about" aria-labelledby="profil-h"><div class="wrap"><div class="profil"><div><h2 class="h2" id="profil-h">Votre texte ici. <em>Votre texte ici.</em></h2>
+<div class="profil__body"><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><div class="tags"><span class="tag tag--accent">Tag</span><span class="tag tag--accent">Tag</span><span class="tag tag--accent">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div>
+<dl class="spec"><div><dt>Votre texte ici.</dt><dd>0+</dd><span class="k" aria-hidden="true">Libellé</span></div><div><dt>Libellé</dt><dd>00+</dd><span class="k" aria-hidden="true">Libellé</span></div><div><dt>Votre texte ici.</dt><dd>0</dd><span class="k" aria-hidden="true">Libellé</span></div><div><dt>Votre texte ici. Votre texte ici.</dt><dd>Libellé</dd><span class="k" aria-hidden="true">Libellé</span></div></dl></div></div></section><section id="projets" class="sec sec--alt blueprint" style="--bp:50% 20%" data-section="projects" aria-labelledby="projets-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="projets-h">Libellé <em>Libellé</em></h2><p class="lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><div class="feats"><a class="card" href="#projet-4"><figure><svg class="diag" viewBox="0 0 640 320" role="img" aria-label="Schéma du projet"><defs><pattern id="g1" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="var(--accent)" stroke-opacity=".13" stroke-width=".6"/></pattern><marker id="m1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" fill="var(--accent)"/></marker></defs><rect width="640" height="320" fill="url(#g1)"/><g class="box"><rect x="32" y="64" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="86" class="t-lbl">Bloc</text></g><path class="trace" pathLength="1" d="M136 86 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="32" y="136" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="158" class="t-lbl">Bloc</text></g><path class="trace" pathLength="1" d="M136 158 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="32" y="208" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="230" class="t-lbl">Bloc</text></g><path class="trace" pathLength="1" d="M136 230 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="222" y="56" width="196" height="208" class="trace" pathLength="1" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.2"/><text x="234" y="78" class="t-lbl">Bloc</text></g><g class="box"><rect x="244" y="150" width="112" height="48" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="256" y="172" class="t-lbl">Bloc</text><text x="256" y="188" class="t-sub">Bloc</text></g><path class="trace" pathLength="1" d="M418 110 H480" fill="none" stroke="var(--accent)" stroke-width="1.4" marker-end="url(#m1)"/><text x="424" y="76" class="t-sub">Bloc</text><g class="box"><rect x="482" y="84" width="138" height="52" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="494" y="106" class="t-lbl">Bloc</text></g><path class="trace" pathLength="1" d="M551 136 V190" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="466" y="192" width="158" height="52" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="478" y="214" class="t-lbl">Bloc</text></g><path class="trace" pathLength="1" d="M466 232 H446 V292 H320 V266" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#m1)"/><text x="340" y="286" class="t-sub">Bloc</text></svg></figure><div class="card__body">
+<p class="meta"><span>Libellé</span><span class="num">0000</span></p>
+<h3><span>Votre texte ici. Votre texte ici. Votre texte ici.</span><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></h3><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></a><a class="card" href="#projet-1"><figure><svg class="diag" viewBox="0 0 640 320" role="img" aria-label="Schéma du projet"><defs><pattern id="g2" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="var(--accent)" stroke-opacity=".13" stroke-width=".6"/></pattern><marker id="m2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" fill="var(--accent)"/></marker></defs><rect width="640" height="320" fill="url(#g2)"/><text x="28" y="94" class="t-lbl">Bloc</text><line class="trace" pathLength="1" x1="132" y1="106" x2="612" y2="106" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><text x="28" y="164" class="t-lbl">Bloc</text><line class="trace" pathLength="1" x1="132" y1="176" x2="612" y2="176" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><text x="28" y="234" class="t-lbl">Bloc</text><line class="trace" pathLength="1" x1="132" y1="246" x2="612" y2="246" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><g class="box"><rect x="132" y="218" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="212" y="78" width="60" height="28" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="276" y="148" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="356" y="218" width="60" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="420" y="78" width="44" height="28" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="468" y="218" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="548" y="148" width="48" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><path class="trace" pathLength="1" d="M212 274 V112" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#m2)"/><path class="trace" pathLength="1" d="M420 274 V112" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#m2)"/><text x="218" y="290" class="t-sub">Bloc</text><text x="426" y="290" class="t-sub">Bloc</text><line class="trace" pathLength="1" x1="132" y1="270" x2="612" y2="270" stroke="var(--ink)" stroke-width="1"/><g class="box"><path d="M470 40 H612 M470 34 V46 M612 34 V46" fill="none" stroke="var(--ink)" stroke-width="1"/><text x="472" y="28" class="t-lbl">Bloc</text></g><text x="132" y="28" class="t-lbl">Bloc</text></svg></figure><div class="card__body">
+<p class="meta"><span>Libellé</span><span class="num">0000</span></p>
+<h3><span>Votre texte ici. Votre texte ici.</span><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></h3><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></a></div><ol class="index"><li><a href="#projet-0"><span class="num">0000</span><h3>Libellé<small>Votre texte ici. Votre texte ici.</small></h3>
+<span class="cat">Libellé</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-2"><span class="num">0000</span><h3>Libellé<small>Votre texte ici. Votre texte ici.</small></h3>
+<span class="cat">Libellé</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-3"><span class="num">0000</span><h3>Libellé<small>Votre texte ici. Votre texte ici.</small></h3>
+<span class="cat">Votre texte ici.</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-5"><span class="num">0000</span><h3>Libellé<small>Votre texte ici. Votre texte ici. Votre texte ici.</small></h3>
+<span class="cat">Libellé</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li></ol></div></section><section id="stack" class="sec blueprint" style="--bp:80% 10%" data-section="skills" aria-labelledby="stack-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="stack-h">Libellé <em>Libellé</em></h2><p class="lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><div class="stack"><div class="dom"><header><span class="code">Libellé</span><h3>Libellé</h3></header><ul><li><b>Votre texte ici.</b><span>Votre texte ici. Votre texte ici. Votre texte ici.</span></li><li><b>Libellé</b><span>Votre texte ici.</span></li><li><b>Votre texte ici.</b><span>Libellé</span></li><li><b>Votre texte ici.</b><span>Libellé</span></li><li><b>Libellé</b><span class="none" aria-label="aucun projet listé">—</span></li></ul></div><div class="dom"><header><span class="code">Libellé</span><h3>Votre texte ici.</h3></header><ul><li><b>Libellé</b><span>Votre texte ici. Votre texte ici.</span></li><li><b>Votre texte ici.</b><span>Votre texte ici. Votre texte ici.</span></li><li><b>Votre texte ici.</b><span>Votre texte ici.</span></li><li><b>Libellé</b><span class="none" aria-label="aucun projet listé">—</span></li><li><b>Votre texte ici. Votre texte ici.</b><span>Votre texte ici.</span></li></ul></div><div class="dom"><header><span class="code">Libellé</span><h3>Votre texte ici.</h3></header><ul><li><b>Libellé</b><span>Libellé</span></li><li><b>Votre texte ici.</b><span>Votre texte ici.</span></li><li><b>Libellé</b><span>Votre texte ici. Votre texte ici.</span></li><li><b>Votre texte ici.</b><span class="none" aria-label="aucun projet listé">—</span></li><li><b>Votre texte ici.</b><span class="none" aria-label="aucun projet listé">—</span></li></ul></div></div></div></section><section id="parcours" class="sec sec--alt blueprint" style="--bp:20% 60%" data-section="experience" aria-labelledby="parcours-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="parcours-h">Libellé <em>Libellé</em></h2><p class="lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><ol class="tl"><li><span class="num">Libellé</span><div><h3>Votre texte ici.</h3><p class="co">Votre texte ici. Votre texte ici.</p>
+<p class="d">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li><li><span class="num">0000 — 0000</span><div><h3>Votre texte ici. Votre texte ici.</h3><p class="co">Votre texte ici. Votre texte ici.</p>
+<p class="d">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li><li><span class="num">0000 — 0000</span><div><h3>Votre texte ici. Votre texte ici.</h3><p class="co">Votre texte ici. Votre texte ici.</p>
+<p class="d">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li><li><span class="num">0000 — 0000</span><div><h3>Votre texte ici. Votre texte ici. Votre texte ici.</h3><p class="co">Votre texte ici. Votre texte ici. Votre texte ici.</p>
+<p class="d">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li></ol></div></section><section id="ecrits" class="sec blueprint" style="--bp:70% 80%" data-section="blog" aria-labelledby="ecrits-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="ecrits-h">Libellé <em>Libellé</em></h2><p class="lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><ul class="posts"><li class="post"><a href="#article-0"><span class="num">Libellé</span><span class="cat">Libellé</span>
+<div><h3>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</h3><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><span class="read">Libellé <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li><li class="post"><a href="#article-1"><span class="num">Libellé</span><span class="cat">Libellé</span>
+<div><h3>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</h3><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><span class="read">Libellé <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li><li class="post"><a href="#article-2"><span class="num">Libellé</span><span class="cat">Libellé</span>
+<div><h3>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</h3><p>Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p></div><span class="read">Libellé <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li></ul></div></section><section id="contact" class="sec contact blueprint on-night" style="--bp:40% 40%" data-section="blog" aria-labelledby="contact-h"><div class="wrap">
+  <div class="kanji r" aria-hidden="true">Libellé</div>
+  <h2 class="h2" id="contact-h">Libellé <em>Libellé</em></h2><p class="lead">Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici. Votre texte ici.</p>
+  <div class="contact__act"><a class="contact__mail" href="mailto:contact@exemple.com">Libellé<wbr><span style="white-space:nowrap">Votre texte ici.</span></a>
+  <div class="contact__links"><a class="link" href="#github">Libellé <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 11L11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a><a class="link" href="#linkedin">Libellé <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 11L11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div></div>
+</div></section></main><footer class="foot"><div class="wrap"><p class="foot__name">Libellé <span>Libellé</span> Libellé</p><p>Votre texte ici. Votre texte ici.</p></div></footer></template><template id="tpl-en" data-title="First Last — Job title"><a class="skip" href="#main">Skip to content</a>
+<nav class="nav" id="nav" aria-label="Navigation"><div class="wrap">
+  <a class="nav__logo" href="#top">PRÉNOM <span>·</span> NOM</a>
+  <ul class="nav__links"><li><a href="#profil">Profile</a></li><li><a href="#projets">Projects</a></li><li><a href="#stack">Skills</a></li><li><a href="#parcours">Experience</a></li><li><a href="#ecrits">Writing</a></li></ul>
+  <div class="nav__right"><div class="lang" role="group" aria-label="Language"><button type="button" aria-pressed="false" lang="fr">FR</button><button type="button" aria-pressed="true" lang="en">EN</button><button type="button" aria-pressed="false" lang="ja" aria-label="日本語">日</button></div>
+    <a class="btn btn--primary" href="mailto:contact@exemple.com">Send an email</a>
+    <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu"><i aria-hidden="true"></i>Menu</button></div></div>
+  <div class="menu" id="menu"><ul><li><a href="#profil">Profile <b>01</b></a></li><li><a href="#projets">Projects <b>02</b></a></li><li><a href="#stack">Skills <b>03</b></a></li><li><a href="#parcours">Experience <b>04</b></a></li><li><a href="#ecrits">Writing <b>05</b></a></li></ul><div class="lang" role="group" aria-label="Language"><button type="button" aria-pressed="false" lang="fr">FR</button><button type="button" aria-pressed="true" lang="en">EN</button><button type="button" aria-pressed="false" lang="ja" aria-label="日本語">日</button></div>
+    <a class="btn btn--primary" href="mailto:contact@exemple.com">Send an email <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div></nav><header class="hero" id="top">
+  <img class="hero__bg" src="bg.jpg" alt="" width="1216" height="832" fetchpriority="high">
+  <div class="hero__veil"></div>
+  <div class="frame" aria-hidden="true"><i class="l"></i><i class="r"></i><i class="t"></i><i class="b"></i><span class="dot t"></span><span class="dot b"></span></div>
+  <div class="kanji l" aria-hidden="true">名前</div><div class="kanji r" aria-hidden="true">Your text here.</div>
+  <div class="hero__content"><div class="ai-logo ai-logo--brand" role="img" aria-label="Prénom Nom"><span class="ai-frame" aria-hidden="true"><svg class="ai-frame-l" viewBox="0 0 70 216"><path class="ai-p-brand" d="M70 4H56Q40 4 37 20L7 186Q2 212 28 212H70"/><path class="ai-p-site" d="M70 .5H48.95L.5 215.5H70"/></svg><svg class="ai-frame-m" viewBox="0 0 10 216" preserveAspectRatio="none"><path class="ai-p-brand" d="M0 4H10M0 212H10"/><path class="ai-p-site" d="M0 .5H10M0 215.5H10"/></svg><svg class="ai-frame-r" viewBox="0 0 70 216"><path class="ai-p-brand" d="M70 4H56Q40 4 37 20L7 186Q2 212 28 212H70"/><path class="ai-p-site" d="M70 .5H48.95L.5 215.5H70"/></svg></span><svg class="ai-a" viewBox="0 0 118 150" aria-hidden="true"><path class="ai-p-brand" fill-rule="evenodd" d="M8 150Q0 150 1.8 142L31.5 12Q34 0 46 0H72Q84 0 86.5 12L116.2 142Q118 150 110 150H96Q88 150 86.2 142L82 122H36L31.8 142Q30 150 22 150ZM46 96L56 46Q59 37 62 46L72 96Z"/><path class="ai-p-site" fill-rule="evenodd" d="M0 150L33.8 0H84.2L118 150H87.9L82 122H36L30.1 150ZM46 96L59 31L72 96Z"/></svg><span class="ai-band ai-band-1" aria-hidden="true"><span>Prénom</span></span><span class="ai-i" aria-hidden="true"></span><span class="ai-band ai-band-2" aria-hidden="true"><span>Nom</span></span></div>
+    <h1 class="hero__h1">Your text here. Your text here. Your text here.</h1><p class="hero__lead">Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p>
+    <div class="hero__actions"><a class="btn btn--light" href="#projets">See the projects</a><a class="btn btn--primary" href="mailto:contact@exemple.com">Send an email <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div>
+  </div>
+</header><main id="main"><section id="profil" class="sec blueprint" style="--bp:10% 5%" data-section="about" aria-labelledby="profil-h"><div class="wrap"><div class="profil"><div><h2 class="h2" id="profil-h">Your text here. Your text here. <em>Your text here. Your text here.</em></h2>
+<div class="profil__body"><p>Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p><p>Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p></div><div class="tags"><span class="tag tag--accent">Tag</span><span class="tag tag--accent">Tag</span><span class="tag tag--accent">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div>
+<dl class="spec"><div><dt>Your text here.</dt><dd>0+</dd><span class="k" aria-hidden="true">Label</span></div><div><dt>Your text here.</dt><dd>00+</dd><span class="k" aria-hidden="true">Label</span></div><div><dt>Your text here.</dt><dd>0</dd><span class="k" aria-hidden="true">Label</span></div><div><dt>Your text here.</dt><dd>Label</dd><span class="k" aria-hidden="true">Label</span></div></dl></div></div></section><section id="projets" class="sec sec--alt blueprint" style="--bp:50% 20%" data-section="projects" aria-labelledby="projets-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="projets-h">Label <em>Label</em></h2><p class="lead">Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p></div><div class="feats"><a class="card" href="#projet-4"><figure><svg class="diag" viewBox="0 0 640 320" role="img" aria-label="Schéma du projet"><defs><pattern id="g1" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="var(--accent)" stroke-opacity=".13" stroke-width=".6"/></pattern><marker id="m1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" fill="var(--accent)"/></marker></defs><rect width="640" height="320" fill="url(#g1)"/><g class="box"><rect x="32" y="64" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="86" class="t-lbl">Block</text></g><path class="trace" pathLength="1" d="M136 86 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="32" y="136" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="158" class="t-lbl">Block</text></g><path class="trace" pathLength="1" d="M136 158 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="32" y="208" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="230" class="t-lbl">Block</text></g><path class="trace" pathLength="1" d="M136 230 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="222" y="56" width="196" height="208" class="trace" pathLength="1" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.2"/><text x="234" y="78" class="t-lbl">Block</text></g><g class="box"><rect x="244" y="150" width="112" height="48" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="256" y="172" class="t-lbl">Block</text><text x="256" y="188" class="t-sub">Block</text></g><path class="trace" pathLength="1" d="M418 110 H480" fill="none" stroke="var(--accent)" stroke-width="1.4" marker-end="url(#m1)"/><text x="424" y="76" class="t-sub">Block</text><g class="box"><rect x="482" y="84" width="138" height="52" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="494" y="106" class="t-lbl">Block</text></g><path class="trace" pathLength="1" d="M551 136 V190" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="466" y="192" width="158" height="52" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="478" y="214" class="t-lbl">Block</text></g><path class="trace" pathLength="1" d="M466 232 H446 V292 H320 V266" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#m1)"/><text x="340" y="286" class="t-sub">Block</text></svg></figure><div class="card__body">
+<p class="meta"><span>Label</span><span class="num">0000</span></p>
+<h3><span>Your text here. Your text here. Your text here.</span><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></h3><p>Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></a><a class="card" href="#projet-1"><figure><svg class="diag" viewBox="0 0 640 320" role="img" aria-label="Schéma du projet"><defs><pattern id="g2" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="var(--accent)" stroke-opacity=".13" stroke-width=".6"/></pattern><marker id="m2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" fill="var(--accent)"/></marker></defs><rect width="640" height="320" fill="url(#g2)"/><text x="28" y="94" class="t-lbl">Block</text><line class="trace" pathLength="1" x1="132" y1="106" x2="612" y2="106" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><text x="28" y="164" class="t-lbl">Block</text><line class="trace" pathLength="1" x1="132" y1="176" x2="612" y2="176" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><text x="28" y="234" class="t-lbl">Block</text><line class="trace" pathLength="1" x1="132" y1="246" x2="612" y2="246" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><g class="box"><rect x="132" y="218" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="212" y="78" width="60" height="28" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="276" y="148" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="356" y="218" width="60" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="420" y="78" width="44" height="28" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="468" y="218" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="548" y="148" width="48" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><path class="trace" pathLength="1" d="M212 274 V112" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#m2)"/><path class="trace" pathLength="1" d="M420 274 V112" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#m2)"/><text x="218" y="290" class="t-sub">Block</text><text x="426" y="290" class="t-sub">Block</text><line class="trace" pathLength="1" x1="132" y1="270" x2="612" y2="270" stroke="var(--ink)" stroke-width="1"/><g class="box"><path d="M470 40 H612 M470 34 V46 M612 34 V46" fill="none" stroke="var(--ink)" stroke-width="1"/><text x="472" y="28" class="t-lbl">Block</text></g><text x="132" y="28" class="t-lbl">Block</text></svg></figure><div class="card__body">
+<p class="meta"><span>Label</span><span class="num">0000</span></p>
+<h3><span>Your text here. Your text here. Your text here.</span><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></h3><p>Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></a></div><ol class="index"><li><a href="#projet-0"><span class="num">0000</span><h3>Label<small>Your text here. Your text here.</small></h3>
+<span class="cat">Label</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-2"><span class="num">0000</span><h3>Label<small>Your text here. Your text here.</small></h3>
+<span class="cat">Label</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-3"><span class="num">0000</span><h3>Label<small>Your text here. Your text here.</small></h3>
+<span class="cat">Your text here.</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-5"><span class="num">0000</span><h3>Label<small>Your text here. Your text here.</small></h3>
+<span class="cat">Label</span><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li></ol></div></section><section id="stack" class="sec blueprint" style="--bp:80% 10%" data-section="skills" aria-labelledby="stack-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="stack-h">Label <em>Label</em></h2><p class="lead">Your text here. Your text here. Your text here. Your text here.</p></div><div class="stack"><div class="dom"><header><span class="code">Label</span><h3>Label</h3></header><ul><li><b>Your text here.</b><span>Your text here. Your text here. Your text here.</span></li><li><b>Label</b><span>Your text here.</span></li><li><b>Your text here.</b><span>Label</span></li><li><b>Your text here.</b><span>Label</span></li><li><b>Label</b><span class="none" aria-label="no project listed">—</span></li></ul></div><div class="dom"><header><span class="code">Label</span><h3>Your text here.</h3></header><ul><li><b>Label</b><span>Your text here. Your text here.</span></li><li><b>Your text here.</b><span>Your text here. Your text here.</span></li><li><b>Your text here.</b><span>Your text here.</span></li><li><b>Label</b><span class="none" aria-label="no project listed">—</span></li><li><b>Your text here. Your text here.</b><span>Your text here.</span></li></ul></div><div class="dom"><header><span class="code">Label</span><h3>Your text here.</h3></header><ul><li><b>Label</b><span>Label</span></li><li><b>Your text here.</b><span>Your text here. Your text here.</span></li><li><b>Label</b><span>Your text here. Your text here.</span></li><li><b>Your text here.</b><span class="none" aria-label="no project listed">—</span></li><li><b>Your text here.</b><span class="none" aria-label="no project listed">—</span></li></ul></div></div></div></section><section id="parcours" class="sec sec--alt blueprint" style="--bp:20% 60%" data-section="experience" aria-labelledby="parcours-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="parcours-h">Label <em>Label</em></h2><p class="lead">Your text here. Your text here. Your text here. Your text here. Your text here.</p></div><ol class="tl"><li><span class="num">Label</span><div><h3>Your text here.</h3><p class="co">Your text here. Your text here.</p>
+<p class="d">Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li><li><span class="num">0000 — 0000</span><div><h3>Your text here. Your text here.</h3><p class="co">Your text here. Your text here.</p>
+<p class="d">Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li><li><span class="num">0000 — 0000</span><div><h3>Your text here. Your text here.</h3><p class="co">Your text here. Your text here.</p>
+<p class="d">Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li><li><span class="num">0000 — 0000</span><div><h3>Your text here. Your text here. Your text here.</h3><p class="co">Your text here. Your text here.</p>
+<p class="d">Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p><div class="tags"><span class="tag">Tag</span><span class="tag">Tag</span><span class="tag">Tag</span></div></div></li></ol></div></section><section id="ecrits" class="sec blueprint" style="--bp:70% 80%" data-section="blog" aria-labelledby="ecrits-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="ecrits-h">Label <em>Label</em></h2><p class="lead">Your text here. Your text here. Your text here. Your text here. Your text here.</p></div><ul class="posts"><li class="post"><a href="#article-0"><span class="num">Label</span><span class="cat">Label</span>
+<div><h3>Your text here. Your text here. Your text here. Your text here.</h3><p>Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p></div><span class="read">Label <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li><li class="post"><a href="#article-1"><span class="num">Label</span><span class="cat">Label</span>
+<div><h3>Your text here. Your text here. Your text here. Your text here. Your text here.</h3><p>Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p></div><span class="read">Label <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li><li class="post"><a href="#article-2"><span class="num">Label</span><span class="cat">Label</span>
+<div><h3>Your text here. Your text here. Your text here. Your text here.</h3><p>Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p></div><span class="read">Label <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li></ul></div></section><section id="contact" class="sec contact blueprint on-night" style="--bp:40% 40%" data-section="blog" aria-labelledby="contact-h"><div class="wrap">
+  <div class="kanji r" aria-hidden="true">Label</div>
+  <h2 class="h2" id="contact-h">Label <em>Label</em></h2><p class="lead">Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here. Your text here.</p>
+  <div class="contact__act"><a class="contact__mail" href="mailto:contact@exemple.com">Label<wbr><span style="white-space:nowrap">Your text here.</span></a>
+  <div class="contact__links"><a class="link" href="#github">Label <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 11L11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a><a class="link" href="#linkedin">Label <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 11L11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div></div>
+</div></section></main><footer class="foot"><div class="wrap"><p class="foot__name">Label <span>Label</span> Label</p><p>Your text here. Your text here.</p></div></footer></template><template id="tpl-ja" data-title="名前 — 職種"><a class="skip" href="#main">本文へ移動</a>
+<nav class="nav" id="nav" aria-label="Navigation"><div class="wrap">
+  <a class="nav__logo" href="#top">PRÉNOM <span>·</span> NOM</a>
+  <ul class="nav__links"><li><a href="#profil">自己紹介</a></li><li><a href="#projets">プロジェクト</a></li><li><a href="#stack">スキル</a></li><li><a href="#parcours">経歴</a></li><li><a href="#ecrits">記事</a></li></ul>
+  <div class="nav__right"><div class="lang" role="group" aria-label="言語"><button type="button" aria-pressed="false" lang="fr">FR</button><button type="button" aria-pressed="false" lang="en">EN</button><button type="button" aria-pressed="true" lang="ja" aria-label="日本語">日</button></div>
+    <a class="btn btn--primary" href="mailto:contact@exemple.com">メールで連絡</a>
+    <button class="nav__menu" type="button" aria-expanded="false" aria-controls="menu"><i aria-hidden="true"></i>メニュー</button></div></div>
+  <div class="menu" id="menu"><ul><li><a href="#profil">自己紹介 <b>01</b></a></li><li><a href="#projets">プロジェクト <b>02</b></a></li><li><a href="#stack">スキル <b>03</b></a></li><li><a href="#parcours">経歴 <b>04</b></a></li><li><a href="#ecrits">記事 <b>05</b></a></li></ul><div class="lang" role="group" aria-label="言語"><button type="button" aria-pressed="false" lang="fr">FR</button><button type="button" aria-pressed="false" lang="en">EN</button><button type="button" aria-pressed="true" lang="ja" aria-label="日本語">日</button></div>
+    <a class="btn btn--primary" href="mailto:contact@exemple.com">メールで連絡 <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div></nav><header class="hero" id="top">
+  <img class="hero__bg" src="bg.jpg" alt="" width="1216" height="832" fetchpriority="high">
+  <div class="hero__veil"></div>
+  <div class="frame" aria-hidden="true"><i class="l"></i><i class="r"></i><i class="t"></i><i class="b"></i><span class="dot t"></span><span class="dot b"></span></div>
+  <div class="kanji l" aria-hidden="true">名前</div><div class="kanji r" aria-hidden="true">ここに文章を入れます。ここに文章を入れます。</div>
+  <div class="hero__content"><div class="ai-logo ai-logo--brand" role="img" aria-label="名前"><span class="ai-frame" aria-hidden="true"><svg class="ai-frame-l" viewBox="0 0 70 216"><path class="ai-p-brand" d="M70 4H56Q40 4 37 20L7 186Q2 212 28 212H70"/><path class="ai-p-site" d="M70 .5H48.95L.5 215.5H70"/></svg><svg class="ai-frame-m" viewBox="0 0 10 216" preserveAspectRatio="none"><path class="ai-p-brand" d="M0 4H10M0 212H10"/><path class="ai-p-site" d="M0 .5H10M0 215.5H10"/></svg><svg class="ai-frame-r" viewBox="0 0 70 216"><path class="ai-p-brand" d="M70 4H56Q40 4 37 20L7 186Q2 212 28 212H70"/><path class="ai-p-site" d="M70 .5H48.95L.5 215.5H70"/></svg></span><svg class="ai-a" viewBox="0 0 118 150" aria-hidden="true"><path class="ai-p-brand" fill-rule="evenodd" d="M8 150Q0 150 1.8 142L31.5 12Q34 0 46 0H72Q84 0 86.5 12L116.2 142Q118 150 110 150H96Q88 150 86.2 142L82 122H36L31.8 142Q30 150 22 150ZM46 96L56 46Q59 37 62 46L72 96Z"/><path class="ai-p-site" fill-rule="evenodd" d="M0 150L33.8 0H84.2L118 150H87.9L82 122H36L30.1 150ZM46 96L59 31L72 96Z"/></svg><span class="ai-band ai-band-1" aria-hidden="true"><span>名前</span></span><span class="ai-i" aria-hidden="true"></span><span class="ai-band ai-band-2" aria-hidden="true"><span>苗字</span></span></div>
+    <h1 class="hero__h1">ここに文章を入れます。ここに文章を入れます。</h1><p class="hero__lead">ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p>
+    <div class="hero__actions"><a class="btn btn--light" href="#projets">プロジェクトを見る</a><a class="btn btn--primary" href="mailto:contact@exemple.com">メールで連絡 <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div>
+  </div>
+</header><main id="main"><section id="profil" class="sec blueprint" style="--bp:10% 5%" data-section="about" aria-labelledby="profil-h"><div class="wrap"><div class="profil"><div><h2 class="h2" id="profil-h">ラベル<br><em>ラベル</em></h2>
+<div class="profil__body"><p>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p><p>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p></div><div class="tags"><span class="tag tag--accent">タグ</span><span class="tag tag--accent">タグ</span><span class="tag tag--accent">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span></div></div>
+<dl class="spec"><div><dt>ラベル</dt><dd>ラベル</dd><span class="k" aria-hidden="true">ラベル</span></div><div><dt>ラベル</dt><dd>ラベル</dd><span class="k" aria-hidden="true">ラベル</span></div><div><dt>ラベル</dt><dd>ラベル</dd><span class="k" aria-hidden="true">ラベル</span></div><div><dt>ここに文章を入れます。ここに文章を入れます。</dt><dd>ラベル</dd><span class="k" aria-hidden="true">ラベル</span></div></dl></div></div></section><section id="projets" class="sec sec--alt blueprint" style="--bp:50% 20%" data-section="projects" aria-labelledby="projets-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="projets-h">ラベル<br><em>ラベル</em></h2><p class="lead">ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p></div><div class="feats"><a class="card" href="#projet-4"><figure><svg class="diag" viewBox="0 0 640 320" role="img" aria-label="Schéma du projet"><defs><pattern id="g1" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="var(--accent)" stroke-opacity=".13" stroke-width=".6"/></pattern><marker id="m1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" fill="var(--accent)"/></marker></defs><rect width="640" height="320" fill="url(#g1)"/><g class="box"><rect x="32" y="64" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="86" class="t-lbl">ブロック</text></g><path class="trace" pathLength="1" d="M136 86 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="32" y="136" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="158" class="t-lbl">ブロック</text></g><path class="trace" pathLength="1" d="M136 158 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="32" y="208" width="104" height="44" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="44" y="230" class="t-lbl">ブロック</text></g><path class="trace" pathLength="1" d="M136 230 H196 V160 H220" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="222" y="56" width="196" height="208" class="trace" pathLength="1" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.2"/><text x="234" y="78" class="t-lbl">ブロック</text></g><g class="box"><rect x="244" y="150" width="112" height="48" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="256" y="172" class="t-lbl">ブロック</text><text x="256" y="188" class="t-sub">ブロック</text></g><path class="trace" pathLength="1" d="M418 110 H480" fill="none" stroke="var(--accent)" stroke-width="1.4" marker-end="url(#m1)"/><text x="424" y="76" class="t-sub">ブロック</text><g class="box"><rect x="482" y="84" width="138" height="52" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="494" y="106" class="t-lbl">ブロック</text></g><path class="trace" pathLength="1" d="M551 136 V190" fill="none" stroke="var(--accent)" stroke-width="1" marker-end="url(#m1)"/><g class="box"><rect x="466" y="192" width="158" height="52" class="trace" pathLength="1" fill="var(--card)" stroke="var(--accent)" stroke-width="1.2"/><text x="478" y="214" class="t-lbl">ブロック</text></g><path class="trace" pathLength="1" d="M466 232 H446 V292 H320 V266" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#m1)"/><text x="340" y="286" class="t-sub">ブロック</text></svg></figure><div class="card__body">
+<p class="meta"><span>ラベル</span><span class="num">0000</span></p>
+<h3><span>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</span><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></h3><p>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p><div class="tags"><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span></div></div></a><a class="card" href="#projet-1"><figure><svg class="diag" viewBox="0 0 640 320" role="img" aria-label="Schéma du projet"><defs><pattern id="g2" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="var(--accent)" stroke-opacity=".13" stroke-width=".6"/></pattern><marker id="m2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" fill="var(--accent)"/></marker></defs><rect width="640" height="320" fill="url(#g2)"/><text x="28" y="94" class="t-lbl">ブロック</text><line class="trace" pathLength="1" x1="132" y1="106" x2="612" y2="106" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><text x="28" y="164" class="t-lbl">ブロック</text><line class="trace" pathLength="1" x1="132" y1="176" x2="612" y2="176" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><text x="28" y="234" class="t-lbl">ブロック</text><line class="trace" pathLength="1" x1="132" y1="246" x2="612" y2="246" stroke="var(--accent)" stroke-opacity=".35" stroke-width="1"/><g class="box"><rect x="132" y="218" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="212" y="78" width="60" height="28" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="276" y="148" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="356" y="218" width="60" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="420" y="78" width="44" height="28" fill="var(--accent)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="468" y="218" width="76" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><g class="box"><rect x="548" y="148" width="48" height="28" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/></g><path class="trace" pathLength="1" d="M212 274 V112" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#m2)"/><path class="trace" pathLength="1" d="M420 274 V112" fill="none" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#m2)"/><text x="218" y="290" class="t-sub">ブロック</text><text x="426" y="290" class="t-sub">ブロック</text><line class="trace" pathLength="1" x1="132" y1="270" x2="612" y2="270" stroke="var(--ink)" stroke-width="1"/><g class="box"><path d="M470 40 H612 M470 34 V46 M612 34 V46" fill="none" stroke="var(--ink)" stroke-width="1"/><text x="472" y="28" class="t-lbl">ブロック</text></g><text x="132" y="28" class="t-lbl">ブロック</text></svg></figure><div class="card__body">
+<p class="meta"><span>ラベル</span><span class="num">0000</span></p>
+<h3><span>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</span><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></h3><p>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p><div class="tags"><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span></div></div></a></div><ol class="index"><li><a href="#projet-0"><span class="num">0000</span><h3>ラベル<small>ここに文章を入れます。ここに文章を入れます。</small></h3>
+<span class="cat">ラベル</span><div class="tags"><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-2"><span class="num">0000</span><h3>ラベル<small>ラベル</small></h3>
+<span class="cat">ラベル</span><div class="tags"><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-3"><span class="num">0000</span><h3>ラベル<small>ラベル</small></h3>
+<span class="cat">ラベル</span><div class="tags"><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li><li><a href="#projet-5"><span class="num">0000</span><h3>ラベル<small>ラベル</small></h3>
+<span class="cat">ラベル</span><div class="tags"><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span></div><svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></li></ol></div></section><section id="stack" class="sec blueprint" style="--bp:80% 10%" data-section="skills" aria-labelledby="stack-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="stack-h">ラベル<br><em>ラベル</em></h2><p class="lead">ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p></div><div class="stack"><div class="dom"><header><span class="code">ラベル</span><h3>ラベル</h3></header><ul><li><b>ラベル</b><span>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</span></li><li><b>ラベル</b><span>ここに文章を入れます。ここに文章を入れます。</span></li><li><b>ラベル</b><span>ラベル</span></li><li><b>ラベル</b><span>ラベル</span></li><li><b>ラベル</b><span class="none" aria-label="該当プロジェクトなし">—</span></li></ul></div><div class="dom"><header><span class="code">ラベル</span><h3>ラベル</h3></header><ul><li><b>ラベル</b><span>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</span></li><li><b>ここに文章を入れます。ここに文章を入れます。</b><span>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</span></li><li><b>ラベル</b><span>ここに文章を入れます。</span></li><li><b>ラベル</b><span class="none" aria-label="該当プロジェクトなし">—</span></li><li><b>ここに文章を入れます。ここに文章を入れます。</b><span>ここに文章を入れます。ここに文章を入れます。</span></li></ul></div><div class="dom"><header><span class="code">ラベル</span><h3>ラベル</h3></header><ul><li><b>ラベル</b><span>ラベル</span></li><li><b>ここに文章を入れます。ここに文章を入れます。</b><span>ここに文章を入れます。ここに文章を入れます。</span></li><li><b>ラベル</b><span>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</span></li><li><b>ここに文章を入れます。ここに文章を入れます。</b><span class="none" aria-label="該当プロジェクトなし">—</span></li><li><b>ここに文章を入れます。ここに文章を入れます。</b><span class="none" aria-label="該当プロジェクトなし">—</span></li></ul></div></div></div></section><section id="parcours" class="sec sec--alt blueprint" style="--bp:20% 60%" data-section="experience" aria-labelledby="parcours-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="parcours-h">ラベル<br><em>ラベル</em></h2><p class="lead">ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p></div><ol class="tl"><li><span class="num">ラベル</span><div><h3>ここに文章を入れます。</h3><p class="co">ここに文章を入れます。</p>
+<p class="d">ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p><div class="tags"><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span></div></div></li><li><span class="num">ラベル</span><div><h3>ラベル</h3><p class="co">ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p>
+<p class="d">ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p><div class="tags"><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span></div></div></li><li><span class="num">ラベル</span><div><h3>ここに文章を入れます。</h3><p class="co">ここに文章を入れます。ここに文章を入れます。</p>
+<p class="d">ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p><div class="tags"><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span></div></div></li><li><span class="num">ラベル</span><div><h3>ラベル</h3><p class="co">ラベル</p>
+<p class="d">ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p><div class="tags"><span class="tag">タグ</span><span class="tag">タグ</span><span class="tag">タグ</span></div></div></li></ol></div></section><section id="ecrits" class="sec blueprint" style="--bp:70% 80%" data-section="blog" aria-labelledby="ecrits-h"><div class="wrap"><div class="sec-head"><h2 class="h2" id="ecrits-h">ラベル<br><em>ラベル</em></h2><p class="lead">ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p></div><ul class="posts"><li class="post"><a href="#article-0"><span class="num">ラベル</span><span class="cat">ラベル</span>
+<div><h3>ここに文章を入れます。ここに文章を入れます。</h3><p>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p></div><span class="read">ラベル <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li><li class="post"><a href="#article-1"><span class="num">ラベル</span><span class="cat">ラベル</span>
+<div><h3>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</h3><p>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p></div><span class="read">ラベル <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li><li class="post"><a href="#article-2"><span class="num">ラベル</span><span class="cat">ラベル</span>
+<div><h3>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</h3><p>ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p></div><span class="read">ラベル <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span></a></li></ul></div></section><section id="contact" class="sec contact blueprint on-night" style="--bp:40% 40%" data-section="blog" aria-labelledby="contact-h"><div class="wrap">
+  <div class="kanji r" aria-hidden="true">ラベル</div>
+  <h2 class="h2" id="contact-h">ラベル<br><em>ラベル</em></h2><p class="lead">ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。ここに文章を入れます。</p>
+  <div class="contact__act"><a class="contact__mail" href="mailto:contact@exemple.com">ラベル<wbr><span style="white-space:nowrap">ここに文章を入れます。ここに文章を入れます。</span></a>
+  <div class="contact__links"><a class="link" href="#github">ラベル <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 11L11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a><a class="link" href="#linkedin">ラベル <svg class="arr" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 11L11 3M5 3h6v6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></div></div>
+</div></section></main><footer class="foot"><div class="wrap"><p class="foot__name">ラベル <span>ラベル</span> ラベル</p><p>ここに文章を入れます。</p></div></footer></template>
+<script>window.RK_LBL={"fr": {"nav": ["Profil", "Projets", "Compétences", "Parcours", "Écrits"], "aria": "Progression de lecture"}, "en": {"nav": ["Profile", "Projects", "Skills", "Experience", "Writing"], "aria": "Reading progress"}, "ja": {"nav": ["自己紹介", "プロジェクト", "スキル", "経歴", "記事"], "aria": "読み進み"}};</script><script>
+var RK=(function(){
+  var rm=matchMedia('(prefers-reduced-motion: reduce)').matches,mq=matchMedia('(max-width: 900px)'),still=document.documentElement.classList.contains('still');
+  var SHED={2:['engine','flame'],3:['lower'],4:['upper']},ACTIVE={1:'engine',2:'lower',3:'upper',4:'fairing',5:'fairing'};
+  var el,ship,ticks,ghosts,count,secs,nights,dock,K=-1,raf=0,geo={};
+  function q(s,r){return (r||document).querySelector(s)}
+  function layout(){
+    if(!el)return; var m=mq.matches;
+    if(m){var W=el.clientWidth,L=parseFloat(getComputedStyle(el).getPropertyValue('--sh'))||48;geo={m:1,x0:14,x1:W-14,L:L};}
+    else{var H=el.clientHeight,S=ship.offsetHeight||88;geo={m:0,H:H,S:S};
+      ticks.forEach(function(li){var k=+li.dataset.k;li.style.setProperty('--y',(S+(H-S)*k/5)+'px');li.style.setProperty('--i',k)});}
+    ghosts.forEach(function(g){g.style.transform=pos(+g.dataset.k)});
+    var ti=q('.rk__ticks',el); if(ti){ if(m)ti.setAttribute('inert',''); else ti.removeAttribute('inert'); }
+    el.setAttribute('aria-hidden',m?'true':'false');
+  }
+  function pos(p){
+    if(geo.m){var x=geo.x0+(geo.x1-geo.x0-geo.L)*p/5;return 'translateX('+x+'px)';}
+    return 'translateY('+((geo.H-geo.S)*(1-p/5))+'px)';
+  }
+  function progress(){
+    var line=scrollY+innerHeight*0.38,t=secs.map(function(s){return s.getBoundingClientRect().top+scrollY});
+    if(line<t[0])return Math.max(0,line/t[0]);
+    for(var i=0;i<t.length-1;i++) if(line<t[i+1]) return 1+i+(line-t[i])/(t[i+1]-t[i]);
+    return 5;
+  }
+  function spark(plane){
+    if(rm||still)return; var svg=q('.rk__ship svg',el); if(!svg)return; var ns='http://www.w3.org/2000/svg';
+    [[-6,1],[6,1.5],[-3,3],[4,3.5]].forEach(function(d,i){var c=document.createElementNS(ns,'circle');c.setAttribute('cx',15+d[0]*.4);c.setAttribute('cy',plane);c.setAttribute('r','.9');c.setAttribute('fill','oklch(0.72 0.22 235)');svg.appendChild(c);
+      c.animate([{transform:'translate(0,0)',opacity:1},{transform:'translate('+d[0]+'px,'+d[1]*2+'px)',opacity:0}],{duration:240+i*20,easing:'cubic-bezier(.23,1,.32,1)'}).onfinish=function(){c.remove()};});
+  }
+  var PLANE={2:74,3:51,4:28};
+  function setK(k,anim){
+    if(k===K)return; var prev=K; K=k; el.dataset.k=k; el.classList.toggle('is-lit',k>=1);
+    [2,3,4].forEach(function(s){
+      SHED[s].forEach(function(p){var g=q('.rk__ship [data-p="'+p+'"]',el); if(!g)return; var shed=k>=s, was=g.classList.contains('is-shed');
+        if(shed&&!was){ if(anim&&!rm&&!still&&prev>=0){ g.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate(0,44px) rotate(10deg)',opacity:0}],{duration:560,easing:'cubic-bezier(.55,0,1,.45)'}); }
+          g.classList.add('is-shed'); }
+        else if(!shed&&was){ g.classList.remove('is-shed'); if(anim&&!still) g.animate([{opacity:0},{opacity:1}],{duration:150,easing:'ease-out'}); }});
+      var gh=q('.rk__ghost[data-k="'+s+'"]',el); if(gh) gh.classList.toggle('is-on',k>=s);
+      if(anim&&prev>=0&&prev<s&&k>=s) spark(PLANE[s]);
+    });
+    el.querySelectorAll('.rk__ship .rpart').forEach(function(g){g.classList.toggle('is-active',g.dataset.p===ACTIVE[k])});
+    ticks.forEach(function(li){var t=+li.dataset.k;li.classList.toggle('is-past',t<k);li.classList.toggle('is-cur',t===k);var a=li.firstChild; if(t===k)a.setAttribute('aria-current','location'); else a.removeAttribute('aria-current');});
+    var lbl=k>0?ticks[k-1].querySelector('.rk__lbl').lastChild.textContent.trim():'';
+    count.firstChild.textContent=('0'+k).slice(-2); count.lastChild.textContent=lbl?' · '+lbl:'';
+  }
+  function frame(){
+    raf=0; if(!el)return; var p=progress(); if(rm||still)p=Math.floor(p);
+    ship.style.transform=pos(p); el.style.setProperty('--fill',(p/5).toFixed(4));
+    setK(Math.min(5,Math.floor(p+1e-6)),true);
+    // cyanotype on night grounds
+    var r=geo.m?{top:el.getBoundingClientRect().top+10}:{top:el.getBoundingClientRect().top+(geo.H-geo.S)*(1-p/5)+geo.S/2},night=false;
+    nights.forEach(function(n){var b=n.getBoundingClientRect(); if(r.top>b.top&&r.top<b.bottom)night=true});
+    el.classList.toggle('is-night',night);
+    if(dock&&!geo.m){var b=dock.getBoundingClientRect();el.classList.toggle('is-docked',b.top<innerHeight*.55&&b.bottom>innerHeight*.45);}
+  }
+  function onScroll(){ if(!raf) raf=requestAnimationFrame(frame); }
+  function attach(){
+    el=q('#rk'); if(!el)return; ship=q('.rk__ship',el); ticks=[].slice.call(el.querySelectorAll('.rk__ticks li')); ghosts=[].slice.call(el.querySelectorAll('.rk__ghost'));
+    count=q('.rk__count',el); secs=['profil','projets','stack','parcours','ecrits'].map(function(i){return document.getElementById(i)}).filter(Boolean);
+    nights=[].slice.call(document.querySelectorAll('.hero,.contact')); dock=document.querySelector('.launch')?document.getElementById('parcours'):null;
+    K=-1; layout(); frame();
+  }
+  addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',function(){layout();onScroll()});
+  if(mq.addEventListener) mq.addEventListener('change',function(){layout();onScroll()});
+  return {attach:attach};
+})();
+(function(){
+var d=document.documentElement,still=d.classList.contains('still'),rm=matchMedia('(prefers-reduced-motion: reduce)').matches,obs=[];
+function watch(io){obs.push(io);return io}
+function init(){
+  obs.forEach(function(o){o.disconnect()});obs=[];
+  var nav=document.getElementById('nav'),hero=document.getElementById('top');
+  nav.classList.add('is-clear');
+  watch(new IntersectionObserver(function(es){nav.classList.toggle('is-clear',es[0].isIntersecting)},{rootMargin:'-64px 0px 0px 0px'})).observe(hero);
+  if(!still&&!rm){var ds=document.querySelectorAll('.diag');ds.forEach(function(s){s.classList.add('will-draw')});
+    var io=watch(new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('drawn');io.unobserve(en.target)}})},{rootMargin:'0px 0px -15% 0px'}));ds.forEach(function(s){io.observe(s)});}
+  RK.attach();
+  var L=document.querySelector('.launch');
+  if(L){var parts=L.querySelectorAll('svg [data-st]'),cs=L.querySelectorAll('.callouts li'),st=L.querySelectorAll('.stage');
+    var set=function(k){parts.forEach(function(p){var s=+p.dataset.st;p.classList.toggle('is-gone',s<k);p.classList.toggle('is-on',s===k)});
+      cs.forEach(function(c){var s=+c.dataset.st;c.classList.toggle('is-on',s===k);c.classList.toggle('is-gone',s<k)});
+      st.forEach(function(x){x.classList.toggle('is-on',+x.dataset.st===k)})};
+    L.classList.add('js-launch');set(still?2:0);
+    if(!still){var lo=watch(new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting)set(+en.target.dataset.st)})},{rootMargin:'-40% 0px -55% 0px'}));st.forEach(function(x){lo.observe(x)});}}
+}
+/* Centre le logo du hero pendant l'entrée (--ai-dy) ; rien si le hero n'est pas à l'écran. */
+function snapLogo(onlyX){var lg=document.querySelector('.hero .ai-logo');if(!lg)return null;
+  lg.style.removeProperty('--ai-fx');if(!onlyX)lg.style.removeProperty('--ai-fy');
+  var a=lg.getBoundingClientRect(),y=a.top+scrollY;
+  lg.style.setProperty('--ai-fx',(Math.round(a.left)-a.left).toFixed(3)+'px');if(!onlyX)lg.style.setProperty('--ai-fy',(Math.round(y)-y).toFixed(3)+'px');
+  return a;}
+/* fin du dépliage : le logo s'est élargi et recentré, on recale l'horizontale (il remonte encore, l'ajustement ne se voit pas) */
+document.addEventListener('animationend',function(e){if(e.animationName==='aiBand'&&e.target.closest('.hero'))snapLogo(true)});
+addEventListener('resize',function(){snapLogo()});if(document.fonts)document.fonts.ready.then(function(){snapLogo()});addEventListener('load',function(){snapLogo()});
+function centerLogo(){var lg=document.querySelector('.hero .ai-logo'),hr=lg&&lg.closest('.hero');var a=snapLogo();
+  if(!lg||!hr||!d.classList.contains('ouv'))return;var h=hr.getBoundingClientRect();
+  var dy=h.bottom>0&&h.top<innerHeight?Math.round((Math.max(h.top,0)+Math.min(h.bottom,innerHeight))/2-(a.top+a.height/2)):0;
+  lg.style.setProperty('--ai-dy',dy+'px');}
+function setLang(l,keep){var t=document.getElementById('tpl-'+l);if(!t)return;
+  var y=window.scrollY;d.classList.remove('intro');
+  /* changement de langue : l'entrée du logo est rejouée (nouveau contenu = nouvelles animations),
+     mais la nav reste visible (.relang) puisqu'on vient de s'en servir */
+  if(keep&&d.classList.contains('ouv'))d.classList.add('relang','boot');
+  try{
+  document.getElementById('app').innerHTML=t.innerHTML;d.lang=l;document.title=t.dataset.title;
+  document.body.classList.toggle('lang-ja',l==='ja');
+  var rk=document.getElementById('rk'),lb=(window.RK_LBL||{})[l];
+  if(rk&&lb){rk.setAttribute('aria-label',lb.aria);rk.querySelectorAll('.rk__lbl').forEach(function(s,i){s.lastChild.textContent=' '+lb.nav[i]});}
+  try{localStorage.setItem('ai-lang',l)}catch(e){}
+  init();if(keep){window.scrollTo({top:y,behavior:'instant'});centerLogo();}
+  }finally{if(keep)d.classList.remove('boot');}}
+function menu(open){var n=document.getElementById('nav');if(!n)return;var b=n.querySelector('.nav__menu');n.classList.toggle('is-open',open);if(b)b.setAttribute('aria-expanded',open);d.style.overflow=open?'hidden':'';}
+document.addEventListener('click',function(ev){if(ev.target.closest('.nav__menu')){menu(!document.getElementById('nav').classList.contains('is-open'));return}
+  if(ev.target.closest('.menu a'))menu(false);});
+document.addEventListener('keydown',function(ev){if(ev.key==='Escape'&&document.querySelector('.nav.is-open')){menu(false);var b=document.querySelector('.nav__menu');if(b)b.focus()}});
+document.addEventListener('click',function(ev){var b=ev.target.closest('.lang button');if(b){var wasOpen=!!b.closest('.menu');setLang(b.getAttribute('lang'),true);if(wasOpen)menu(true);var nb=document.querySelector((wasOpen?'.menu ':'.nav__right ')+'.lang button[lang="'+b.getAttribute('lang')+'"]');if(nb)nb.focus()}});
+var m=location.search.match(/lang=(fr|en|ja)/),saved=null;try{saved=localStorage.getItem('ai-lang')}catch(e){}
+var start=(m&&m[1])||saved||'fr';
+try{if(start!=='fr')setLang(start,false);else init();centerLogo();}finally{d.classList.remove('boot');}
+})();</script>
+</body></html>

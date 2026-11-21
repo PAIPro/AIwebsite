@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-22 -48 312 312">
+  <!-- Favicon : logo AI replié, cadre resserré ; contour blanc (halo flou + liseré net) pour le détacher des onglets sombres ; couleur accent du site -->
+  <defs>
+    <filter id="halo" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5"/></filter>
+    <path id="cadre" d="M56 4H212Q228 4 231 20L261 186Q266 212 240 212H28Q2 212 7 186L37 20Q40 4 56 4Z"/>
+  </defs>
+  <use href="#cadre" fill="#fff" stroke="#fff" stroke-width="40" stroke-linejoin="round" filter="url(#halo)"/>
+  <use href="#cadre" fill="#fff" stroke="#fff" stroke-width="30" stroke-linejoin="round"/>
+  <use href="#cadre" fill="#fff" stroke="#0043b5" stroke-width="16" stroke-linejoin="round"/>
+  <path transform="translate(40 33)" fill="#0043b5" fill-rule="evenodd"
+        d="M8 150Q0 150 1.8 142L31.5 12Q34 0 46 0H72Q84 0 86.5 12L116.2 142Q118 150 110 150H96Q88 150 86.2 142L82 122H36L31.8 142Q30 150 22 150ZM46 96L56 46Q59 37 62 46L72 96Z"/>
+  <rect transform="translate(194 108) skewX(12.7) translate(-22 -75)" width="44" height="150" rx="10" fill="#0043b5"/>
+</svg>
